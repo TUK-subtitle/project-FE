@@ -74,7 +74,13 @@ export function useSocket(
         pcmData.byteLength,
       );
     }
-    socketRef.current?.emit('stt:audio', new Uint8Array(pcmData));
+    // Base64 문자열로 전송 (netty-socketio 2.0.9 바이너리 미지원)
+    const bytes = new Uint8Array(pcmData);
+    let binary = '';
+    for (let i = 0; i < bytes.byteLength; i++) {
+      binary += String.fromCharCode(bytes[i]);
+    }
+    socketRef.current?.emit('stt:audio', btoa(binary));
   }, []);
 
   useEffect(() => {
