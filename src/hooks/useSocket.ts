@@ -29,6 +29,7 @@ export function useSocket(
     if (socketRef.current?.connected) return;
 
     const socket = io(SOCKET_URL, {
+      transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 5,
     });
