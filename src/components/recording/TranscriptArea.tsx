@@ -1,12 +1,20 @@
+import { useEffect, useRef } from 'react';
 import type { TranscriptEntry } from '@/types/recording';
 import TranscriptItem from './TranscriptItem';
 
 interface TranscriptAreaProps {
   entries: TranscriptEntry[];
+  liveText?: string;
 }
 
-export default function TranscriptArea({ entries }: TranscriptAreaProps) {
-  if (entries.length === 0) {
+export default function TranscriptArea({ entries, liveText }: TranscriptAreaProps) {
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [entries, liveText]);
+
+  if (entries.length === 0 && !liveText) {
     return (
       <div className="px-[71px] pt-[38px]">
         <p className="text-[16px] leading-normal text-[#959595]">
@@ -23,6 +31,12 @@ export default function TranscriptArea({ entries }: TranscriptAreaProps) {
       {entries.map((entry, index) => (
         <TranscriptItem key={index} entry={entry} />
       ))}
+      {liveText && (
+        <p className="text-[14px] leading-normal font-medium text-[#959595]">
+          {liveText}
+        </p>
+      )}
+      <div ref={bottomRef} />
     </div>
   );
 }

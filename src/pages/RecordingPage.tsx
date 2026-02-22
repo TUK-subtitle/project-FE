@@ -1,10 +1,106 @@
+import { useState, useRef, useCallback } from 'react';
 import Sidebar from '@/components/layout/Sidebar';
 import NoteHeader from '@/components/recording/NoteHeader';
 import TranscriptArea from '@/components/recording/TranscriptArea';
 import RightPanel from '@/components/recording/RightPanel';
 import RecordingBar from '@/components/recording/RecordingBar';
+import { useSocket } from '@/hooks/useSocket';
+import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
+import type { TranscriptEntry } from '@/types/recording';
+
+function formatElapsed(ms: number): string {
+  const totalSec = Math.floor(ms / 1000);
+  const min = String(Math.floor(totalSec / 60)).padStart(2, '0');
+  const sec = String(totalSec % 60).padStart(2, '0');
+  return `${min}:${sec}`;
+}
 
 export default function RecordingPage() {
+  const [entries, setEntries] = useState<TranscriptEntry[]>([]);
+  const [liveText, setLiveText] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
+
+  const audioCaptureRef = useRef<AudioCapture | null>(null);
+  const startTimeRef = useRef<number>(0);
+  const pausedDurationRef = useRef<number>(0);
+  const pauseStartRef = useRef<number>(0);
+
+  const getElapsed = useCallback(() => {
+    const paused = isPaused
+      ? pausedDurationRef.current + (Date.now() - pauseStartRef.current)
+      : pausedDurationRef.current;
+    return Date.now() - startTimeRef.current - paused;
+  }, [isPaused]);
+
+  const { sendAudio, connect, disconnect } = useSocket(
+    // onSubtitleLive
+    (text) => setLiveText(text),
+    // onSubtitleFinal
+    (text) => {
+      const elapsed = getElapsed();
+      setEntries((prev) => [
+        ...prev,
+        {
+          timestamp: formatElapsed(elapsed),
+          speaker: '참석자 1',
+          speakerType: 'host',
+          text,
+        },
+      ]);
+      setLiveText('');
+    },
+  );
+
+  const handleStart = useCallback(async () => {
+    connect();
+
+    const capture = createAudioCapture((pcmData) => {
+      sendAudio(pcmData);
+    });
+    await capture.start();
+    audioCaptureRef.current = capture;
+
+    startTimeRef.current = Date.now();
+    pausedDurationRef.current = 0;
+    setIsRecording(true);
+    setIsPaused(false);
+    setEntries([]);
+    setLiveText('');
+  }, [connect, sendAudio]);
+
+  const handleTogglePause = useCallback(() => {
+    if (!audioCaptureRef.current) return;
+
+    if (isPaused) {
+      pausedDurationRef.current += Date.now() - pauseStartRef.current;
+      audioCaptureRef.current.resume();
+      setIsPaused(false);
+    } else {
+      pauseStartRef.current = Date.now();
+      audioCaptureRef.current.pause();
+      setIsPaused(true);
+    }
+  }, [isPaused]);
+
+  const handleStop = useCallback(() => {
+    audioCaptureRef.current?.stop();
+    audioCaptureRef.current = null;
+    disconnect();
+    setIsRecording(false);
+    setIsPaused(false);
+    setLiveText('');
+  }, [disconnect]);
+
+  const handleCancel = useCallback(() => {
+    audioCaptureRef.current?.stop();
+    audioCaptureRef.current = null;
+    disconnect();
+    setIsRecording(false);
+    setIsPaused(false);
+    setEntries([]);
+    setLiveText('');
+  }, [disconnect]);
 
   return (
     <div className="flex h-screen w-full">
@@ -22,13 +118,20 @@ export default function RecordingPage() {
         {/* 하단 분할 영역 */}
         <div className="flex min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto">
-            <TranscriptArea entries={[]} />
+            <TranscriptArea entries={entries} liveText={liveText} />
           </div>
           <RightPanel memos={[]} defaultTab="summary" />
         </div>
       </div>
 
-      <RecordingBar />
+      <RecordingBar
+        isRecording={isRecording}
+        isPaused={isPaused}
+        onStart={handleStart}
+        onTogglePause={handleTogglePause}
+        onStop={handleStop}
+        onCancel={handleCancel}
+      />
     </div>
   );
 }
