@@ -18,6 +18,7 @@ function formatElapsed(ms: number): string {
 export default function RecordingPage() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [liveText, setLiveText] = useState('');
+  const [liveTimestamp, setLiveTimestamp] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -35,7 +36,10 @@ export default function RecordingPage() {
 
   const { sendAudio, connect, disconnect } = useSocket(
     // onSubtitleLive
-    (text) => setLiveText(text),
+    (text) => {
+      setLiveText(text);
+      setLiveTimestamp((prev) => prev || formatElapsed(getElapsed()));
+    },
     // onSubtitleFinal
     (text) => {
       const elapsed = getElapsed();
@@ -49,6 +53,7 @@ export default function RecordingPage() {
         },
       ]);
       setLiveText('');
+      setLiveTimestamp('');
     },
   );
 
@@ -118,7 +123,11 @@ export default function RecordingPage() {
         {/* 하단 분할 영역 */}
         <div className="flex min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto">
-            <TranscriptArea entries={entries} liveText={liveText} />
+            <TranscriptArea
+              entries={entries}
+              liveText={liveText}
+              liveTimestamp={liveTimestamp}
+            />
           </div>
           <RightPanel memos={[]} defaultTab="summary" />
         </div>
