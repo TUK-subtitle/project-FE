@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+@font-face {
+  font-family: "Chab";
+  src: url("./assets/fonts/chab.otf") format("opentype");
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Sans KR";
+  src: url("./assets/fonts/NotoSansKR-VariableFont_wght.ttf")
+    format("truetype");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+body {
+  font-family: "Noto Sans KR", sans-serif;
+  margin: 0;
+}

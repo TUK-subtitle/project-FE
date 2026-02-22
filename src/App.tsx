@@ -1,9 +1,7 @@
+import RecordingPage from '@/pages/RecordingPage';
+
 function App() {
-  return (
-    <>
-      <h1 className="text-3xl font-bold underline">Vite + React</h1>
-    </>
-  );
+  return <RecordingPage />;
 }
 
 export default App;
