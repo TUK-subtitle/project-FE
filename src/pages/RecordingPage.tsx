@@ -8,6 +8,21 @@ import { useSocket } from '@/hooks/useSocket';
 import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
 import type { TranscriptEntry } from '@/types/recording';
 
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+
+function formatCurrentDate(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, '0');
+  const d = String(now.getDate()).padStart(2, '0');
+  const day = DAY_NAMES[now.getDay()];
+  const hour = now.getHours();
+  const ampm = hour < 12 ? '오전' : '오후';
+  const h12 = hour % 12 || 12;
+  const min = String(now.getMinutes()).padStart(2, '0');
+  return `${y}. ${m}. ${d} (${day}) ${ampm} ${h12}:${min}`;
+}
+
 function formatElapsed(ms: number): string {
   const totalSec = Math.floor(ms / 1000);
   const min = String(Math.floor(totalSec / 60)).padStart(2, '0');
@@ -115,7 +130,7 @@ export default function RecordingPage() {
         {/* 상단 헤더 영역 - 전체 너비 */}
         <NoteHeader
           title="새로운 노트"
-          date="2026. 02. 01 (금) 오후 3:30"
+          date={formatCurrentDate()}
           folder="전체 노트"
         />
         <div className="mt-[20px] border-t border-[#c4c4c4]" />
