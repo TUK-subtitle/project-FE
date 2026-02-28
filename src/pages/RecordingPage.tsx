@@ -133,7 +133,7 @@ export default function RecordingPage() {
           date={formatCurrentDate()}
           folder="전체 노트"
         />
-        <div className="mt-[20px] border-t border-[#c4c4c4]" />
+        <div className="mt-[15px] border-t border-[#c4c4c4]" />
 
         {/* 하단 분할 영역 */}
         <div className="flex min-h-0 flex-1">

@@ -21,10 +21,13 @@ export default function RecordingBar({
     return (
       <div className="fixed bottom-[63px] left-1/2 z-50 -translate-x-1/2">
         <button
-          className="cursor-pointer rounded-[30px] bg-[#00ec7a] px-[32px] py-[14px] text-[18px] font-semibold text-white shadow-[0px_4px_4px_0px_rgba(0,0,0,0.25)]"
+          className="group relative flex cursor-pointer items-center gap-[10px] overflow-hidden rounded-full border border-white/30 bg-gradient-to-r from-[#00d86f] via-[#00ec7a] to-[#20f0b0] px-[34px] py-[14px] text-[18px] font-semibold text-white shadow-[0_12px_26px_rgba(0,236,122,0.45)] transition-all duration-300 hover:-translate-y-[2px] hover:shadow-[0_16px_34px_rgba(0,236,122,0.55)] active:translate-y-0 active:shadow-[0_10px_20px_rgba(0,236,122,0.4)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0f0f0f]"
           onClick={onStart}
         >
-          녹음 시작
+          <span className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_22%_18%,rgba(255,255,255,0.35),transparent_40%)]" />
+          <span className="pointer-events-none absolute -left-[34%] top-0 h-full w-[28%] -skew-x-12 bg-white/25 blur-[1px] transition-transform duration-500 group-hover:translate-x-[420%]" />
+          <MdMic size={20} className="relative" />
+          <span className="relative">녹음 시작</span>
         </button>
       </div>
     );
@@ -41,8 +44,10 @@ export default function RecordingBar({
 
       <div className="flex items-center gap-[16px]">
         <button
-          className={`flex size-[32px] cursor-pointer items-center justify-center rounded-full ${
-            !isPaused ? 'border-2 border-white' : 'bg-[#ff4444]'
+          className={`flex size-[34px] cursor-pointer items-center justify-center rounded-full transition-all duration-200 ease-out hover:-translate-y-[1px] hover:scale-105 hover:shadow-[0_8px_20px_rgba(0,0,0,0.25)] active:translate-y-0 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#3a3a3a] ${
+            !isPaused
+              ? 'border-2 border-white bg-transparent hover:bg-white/12'
+              : 'bg-[#ff4444] hover:bg-[#ff5b5b]'
           }`}
           onClick={onTogglePause}
         >
@@ -54,13 +59,13 @@ export default function RecordingBar({
         </button>
         <div className="h-[35px] w-px bg-white/40" />
         <button
-          className="cursor-pointer text-[18px] font-semibold text-white"
+          className="cursor-pointer rounded-full bg-white/5 px-[14px] py-[6px] text-[17px] font-semibold text-white transition-all duration-200 ease-out hover:-translate-y-[1px] hover:bg-white/14 hover:shadow-[0_8px_18px_rgba(0,0,0,0.25)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#3a3a3a]"
           onClick={onCancel}
         >
           취소
         </button>
         <button
-          className="cursor-pointer text-[18px] font-semibold text-[#00ec7a]"
+          className="cursor-pointer rounded-full bg-[#00ec7a]/12 px-[14px] py-[6px] text-[17px] font-semibold text-[#00ec7a] transition-all duration-200 ease-out hover:-translate-y-[1px] hover:bg-[#00ec7a]/22 hover:text-[#2cff9c] hover:shadow-[0_10px_24px_rgba(0,236,122,0.28)] active:translate-y-0 active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00ec7a] focus-visible:ring-offset-2 focus-visible:ring-offset-[#3a3a3a]"
           onClick={onStop}
         >
           종료

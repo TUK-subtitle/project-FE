@@ -1,7 +1,20 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import io from 'socket.io-client';
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string;
+const DEFAULT_SOCKET_PORT = '8080';
+
+function resolveSocketUrl(): string {
+  const envUrl = import.meta.env.VITE_SOCKET_URL as string | undefined;
+  if (envUrl?.trim()) return envUrl.trim();
+
+  if (typeof window !== 'undefined') {
+    return `${window.location.protocol}//${window.location.hostname}:${DEFAULT_SOCKET_PORT}`;
+  }
+
+  return `http://localhost:${DEFAULT_SOCKET_PORT}`;
+}
+
+const SOCKET_URL = resolveSocketUrl();
 
 interface UseSocketReturn {
   isConnected: boolean;
@@ -26,17 +39,25 @@ export function useSocket(
   }, [onSubtitleLive, onSubtitleFinal]);
 
   const connect = useCallback(() => {
-    if (socketRef.current?.connected) return;
+    if (socketRef.current) return;
 
     const socket = io(SOCKET_URL, {
       transports: ['websocket'],
       reconnection: true,
       reconnectionAttempts: 5,
+      timeout: 10000,
     });
 
     socket.on('connect', () => {
-      console.log('[Socket] 연결 성공, id:', socket.id);
+      console.log('[Socket] 연결 성공, id:', socket.id, 'url:', SOCKET_URL);
       setIsConnected(true);
+    });
+
+    socket.on('connect_error', (...args: unknown[]) => {
+      const message =
+        args[0] instanceof Error ? args[0].message : String(args[0] ?? '');
+      console.error('[Socket] 연결 실패:', message, 'url:', SOCKET_URL);
+      setIsConnected(false);
     });
 
     socket.on('disconnect', (reason) => {
