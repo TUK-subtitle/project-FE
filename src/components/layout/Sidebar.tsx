@@ -8,7 +8,7 @@ import { PiTrash } from 'react-icons/pi';
 export default function Sidebar() {
   return (
     <aside className="flex h-full w-[269px] shrink-0 flex-col border-r border-[#c4c4c4] px-[41px] pt-[19px]">
-      <h1 className="font-[Chab] text-[32px] leading-[64px] text-[#00ec7a]">
+      <h1 className="font-[Chab] text-[24px] leading-[40px] text-[#00ec7a]">
         SpeakView
       </h1>
 

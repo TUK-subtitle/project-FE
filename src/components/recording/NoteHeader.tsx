@@ -14,9 +14,9 @@ export default function NoteHeader({
   showActions = true,
 }: NoteHeaderProps) {
   return (
-    <div className="px-[71px] pt-[39px]">
+    <div className="px-[71px] pt-[27px]">
       <div className="flex items-start justify-between">
-        <div>
+        <div className="self-center">
           <h2 className="text-[24px] leading-normal font-bold text-[#c4c4c4]">
             {title}
           </h2>
@@ -36,13 +36,13 @@ export default function NoteHeader({
         {showActions && (
           <div className="flex items-center gap-[16px] pt-[65px]">
             <button className="text-[#3a3a3a] hover:text-black">
-              <MdSearch size={24} />
+              <MdSearch size={20} />
             </button>
             <button className="text-[#3a3a3a] hover:text-black">
-              <MdOutlineShare size={24} />
+              <MdOutlineShare size={20} />
             </button>
             <button className="text-[#3a3a3a] hover:text-black">
-              <MdOutlineDelete size={24} />
+              <MdOutlineDelete size={20} />
             </button>
           </div>
         )}

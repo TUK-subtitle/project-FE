@@ -13,7 +13,7 @@ export default function MemoTab({ memos }: MemoTabProps) {
           <br />
           여기에 기록하세요.
         </p>
-        <p className="mt-[24px] text-center text-[15px] text-[#727272]">
+        <p className="mt-[24px] ml-5 text-[15px] text-[#727272]">
           메모를 여기에 시작해보세요!
         </p>
       </div>
