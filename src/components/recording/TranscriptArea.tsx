@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
-import { MdPerson } from 'react-icons/md';
 import type { TranscriptEntry } from '@/types/recording';
+import participant1Image from '@/assets/avatars/participant1.png';
 import TranscriptItem from './TranscriptItem';
 
 interface TranscriptAreaProps {
@@ -40,7 +40,11 @@ export default function TranscriptArea({ entries, liveText, liveTimestamp }: Tra
           </p>
           <div className="flex gap-[16px]">
             <div className="flex shrink-0 flex-col items-center gap-[2px]">
-              <MdPerson size={24} className="text-[#4A90D9]" />
+              <img
+                src={participant1Image}
+                alt="참석자 1"
+                className="size-[30px] rounded-full object-cover"
+              />
               <span className="text-[10px] font-medium text-[#4A90D9]">
                 참석자 1
               </span>

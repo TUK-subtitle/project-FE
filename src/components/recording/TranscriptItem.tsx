@@ -1,5 +1,6 @@
-import { MdPerson, MdPersonOutline } from 'react-icons/md';
 import type { TranscriptEntry } from '@/types/recording';
+import participant1Image from '@/assets/avatars/participant1.png';
+import participant2Image from '@/assets/avatars/participant2.png';
 
 interface TranscriptItemProps {
   entry: TranscriptEntry;
@@ -7,6 +8,7 @@ interface TranscriptItemProps {
 
 export default function TranscriptItem({ entry }: TranscriptItemProps) {
   const isHost = entry.speakerType === 'host';
+  const avatarSrc = isHost ? participant1Image : participant2Image;
 
   return (
     <div className="flex flex-col gap-[8px]">
@@ -15,11 +17,11 @@ export default function TranscriptItem({ entry }: TranscriptItemProps) {
       </p>
       <div className="flex gap-[16px]">
         <div className="flex shrink-0 flex-col items-center gap-[2px]">
-          {isHost ? (
-            <MdPerson size={24} className="text-black" />
-          ) : (
-            <MdPersonOutline size={24} className="text-black" />
-          )}
+          <img
+            src={avatarSrc}
+            alt={entry.speaker}
+            className="size-[30px] rounded-full object-cover"
+          />
           <span className="text-[10px] font-medium text-black">
             {entry.speaker}
           </span>
