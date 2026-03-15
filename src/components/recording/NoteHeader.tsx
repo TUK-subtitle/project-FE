@@ -14,7 +14,7 @@ export default function NoteHeader({
   showActions = true,
 }: NoteHeaderProps) {
   return (
-    <div className="px-[71px] pt-[27px]">
+    <div className="px-[71px] pt-[25px]">
       <div className="flex items-start justify-between">
         <div className="self-center">
           <h2 className="text-[24px] leading-normal font-bold text-[#c4c4c4]">
