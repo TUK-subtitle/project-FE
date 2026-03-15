@@ -32,6 +32,7 @@ function formatElapsed(ms: number): string {
 
 export default function RecordingPage() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
+  const [summaries, setSummaries] = useState<string[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -59,6 +60,9 @@ export default function RecordingPage() {
           text,
         },
       ]);
+    },
+    (text) => {
+      setSummaries((prev) => [...prev, text]);
     },
   );
 
@@ -127,7 +131,7 @@ export default function RecordingPage() {
           <div className="flex-1 overflow-y-auto">
             <TranscriptArea entries={entries} />
           </div>
-          <RightPanel memos={[]} defaultTab="summary" />
+          <RightPanel memos={[]} summaries={summaries} defaultTab="summary" />
         </div>
       </div>
 
