@@ -32,8 +32,6 @@ function formatElapsed(ms: number): string {
 
 export default function RecordingPage() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
-  const [liveText, setLiveText] = useState('');
-  const [liveTimestamp, setLiveTimestamp] = useState('');
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -50,12 +48,6 @@ export default function RecordingPage() {
   }, [isPaused]);
 
   const { sendAudio, connect, disconnect } = useSocket(
-    // onSubtitleLive
-    (text) => {
-      setLiveText(text);
-      setLiveTimestamp((prev) => prev || formatElapsed(getElapsed()));
-    },
-    // onSubtitleFinal
     (text) => {
       const elapsed = getElapsed();
       setEntries((prev) => [
@@ -67,8 +59,6 @@ export default function RecordingPage() {
           text,
         },
       ]);
-      setLiveText('');
-      setLiveTimestamp('');
     },
   );
 
@@ -86,7 +76,6 @@ export default function RecordingPage() {
     setIsRecording(true);
     setIsPaused(false);
     setEntries([]);
-    setLiveText('');
   }, [connect, sendAudio]);
 
   const handleTogglePause = useCallback(() => {
@@ -109,7 +98,6 @@ export default function RecordingPage() {
     disconnect();
     setIsRecording(false);
     setIsPaused(false);
-    setLiveText('');
   }, [disconnect]);
 
   const handleCancel = useCallback(() => {
@@ -119,7 +107,6 @@ export default function RecordingPage() {
     setIsRecording(false);
     setIsPaused(false);
     setEntries([]);
-    setLiveText('');
   }, [disconnect]);
 
   return (
@@ -138,11 +125,7 @@ export default function RecordingPage() {
         {/* 하단 분할 영역 */}
         <div className="flex min-h-0 flex-1">
           <div className="flex-1 overflow-y-auto">
-            <TranscriptArea
-              entries={entries}
-              liveText={liveText}
-              liveTimestamp={liveTimestamp}
-            />
+            <TranscriptArea entries={entries} />
           </div>
           <RightPanel memos={[]} defaultTab="summary" />
         </div>

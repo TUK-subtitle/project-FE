@@ -11,19 +11,16 @@ interface UseSocketReturn {
 }
 
 export function useSocket(
-  onSubtitleLive: (text: string) => void,
   onSubtitleFinal: (text: string) => void,
 ): UseSocketReturn {
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
-  const onSubtitleLiveRef = useRef(onSubtitleLive);
   const onSubtitleFinalRef = useRef(onSubtitleFinal);
 
   useEffect(() => {
-    onSubtitleLiveRef.current = onSubtitleLive;
     onSubtitleFinalRef.current = onSubtitleFinal;
-  }, [onSubtitleLive, onSubtitleFinal]);
+  }, [onSubtitleFinal]);
 
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
@@ -42,12 +39,6 @@ export function useSocket(
     socket.on('disconnect', (reason) => {
       console.log('[Socket] 연결 해제:', reason);
       setIsConnected(false);
-    });
-
-    socket.on('stt:subtitle_live', (...args: unknown[]) => {
-      const text = args[0] as string;
-      console.log('[Socket] subtitle_live:', text);
-      onSubtitleLiveRef.current(text);
     });
 
     socket.on('stt:subtitle_final', (...args: unknown[]) => {
