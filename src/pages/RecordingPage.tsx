@@ -6,7 +6,8 @@ import RightPanel from '@/components/recording/RightPanel';
 import RecordingBar from '@/components/recording/RecordingBar';
 import { useSocket } from '@/hooks/useSocket';
 import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
-import type { TranscriptEntry } from '@/types/recording';
+import type { TranscriptEntry, MemoEntry } from '@/types/recording';
+import { createMemo } from '@/api/memo';
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -33,6 +34,7 @@ function formatElapsed(ms: number): string {
 export default function RecordingPage() {
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [summaries, setSummaries] = useState<string[]>([]);
+  const [memos, setMemos] = useState<MemoEntry[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -113,6 +115,12 @@ export default function RecordingPage() {
     setEntries([]);
   }, [disconnect]);
 
+  const handleMemoSubmit = useCallback(async (text: string) => {
+    const elapsed = Math.floor(getElapsed() / 1000);
+    await createMemo(text, elapsed);
+    setMemos((prev) => [...prev, { timestamp: formatElapsed(elapsed * 1000), content: text }]);
+  }, [getElapsed]);
+
   return (
     <div className="flex h-screen w-full">
       <Sidebar />
@@ -131,7 +139,7 @@ export default function RecordingPage() {
           <div className="flex-1 overflow-y-auto">
             <TranscriptArea entries={entries} />
           </div>
-          <RightPanel memos={[]} summaries={summaries} defaultTab="summary" />
+          <RightPanel memos={memos} summaries={summaries} onMemoSubmit={handleMemoSubmit} defaultTab="summary" />
         </div>
       </div>
 
