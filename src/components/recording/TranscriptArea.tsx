@@ -1,22 +1,19 @@
 import { useEffect, useRef } from 'react';
 import type { TranscriptEntry } from '@/types/recording';
-import participant1Image from '@/assets/avatars/participant1.png';
 import TranscriptItem from './TranscriptItem';
 
 interface TranscriptAreaProps {
   entries: TranscriptEntry[];
-  liveText?: string;
-  liveTimestamp?: string;
 }
 
-export default function TranscriptArea({ entries, liveText, liveTimestamp }: TranscriptAreaProps) {
+export default function TranscriptArea({ entries }: TranscriptAreaProps) {
   const bottomRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [entries, liveText]);
+  }, [entries]);
 
-  if (entries.length === 0 && !liveText) {
+  if (entries.length === 0) {
     return (
       <div className="px-[71px] pt-[38px]">
         <p className="text-[16px] leading-normal text-[#959595]">
@@ -33,28 +30,6 @@ export default function TranscriptArea({ entries, liveText, liveTimestamp }: Tra
       {entries.map((entry, index) => (
         <TranscriptItem key={index} entry={entry} />
       ))}
-      {liveText && (
-        <div className="flex flex-col gap-[8px]">
-          <p className="text-[16px] leading-normal font-bold text-[#c4c4c4]">
-            {liveTimestamp}
-          </p>
-          <div className="flex gap-[16px]">
-            <div className="flex shrink-0 flex-col items-center gap-[2px]">
-              <img
-                src={participant1Image}
-                alt="참석자 1"
-                className="size-[30px] rounded-full object-cover"
-              />
-              <span className="text-[10px] font-medium text-[#4A90D9]">
-                참석자 1
-              </span>
-            </div>
-            <p className="text-[14px] leading-normal font-medium whitespace-pre-wrap text-[#4A90D9]">
-              {liveText}
-            </p>
-          </div>
-        </div>
-      )}
       <div ref={bottomRef} />
     </div>
   );
