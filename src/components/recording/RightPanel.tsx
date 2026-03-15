@@ -7,11 +7,13 @@ type Tab = 'summary' | 'memo';
 
 interface RightPanelProps {
   memos: MemoEntry[];
+  summaries: string[];
   defaultTab?: Tab;
 }
 
 export default function RightPanel({
   memos,
+  summaries,
   defaultTab = 'summary',
 }: RightPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>(defaultTab);
@@ -52,7 +54,7 @@ export default function RightPanel({
 
       {/* 탭 콘텐츠 */}
       <div className="flex-1 overflow-y-auto">
-        {activeTab === 'summary' ? <SummaryTab /> : <MemoTab memos={memos} />}
+        {activeTab === 'summary' ? <SummaryTab summaries={summaries} /> : <MemoTab memos={memos} />}
       </div>
     </div>
   );

@@ -12,15 +12,18 @@ interface UseSocketReturn {
 
 export function useSocket(
   onSubtitleFinal: (text: string) => void,
+  onSummary: (text: string) => void,
 ): UseSocketReturn {
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
 
   const onSubtitleFinalRef = useRef(onSubtitleFinal);
+  const onSummaryRef = useRef(onSummary);
 
   useEffect(() => {
     onSubtitleFinalRef.current = onSubtitleFinal;
-  }, [onSubtitleFinal]);
+    onSummaryRef.current = onSummary;
+  }, [onSubtitleFinal, onSummary]);
 
   const connect = useCallback(() => {
     if (socketRef.current?.connected) return;
@@ -45,6 +48,12 @@ export function useSocket(
       const text = args[0] as string;
       console.log('[Socket] subtitle_final:', text);
       onSubtitleFinalRef.current(text);
+    });
+
+    socket.on('stt:summary', (...args: unknown[]) => {
+      const text = args[0] as string;
+      console.log('[Socket] summary:', text);
+      onSummaryRef.current(text);
     });
 
     socketRef.current = socket;
