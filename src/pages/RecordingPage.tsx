@@ -4,7 +4,7 @@ import NoteHeader from '@/components/recording/NoteHeader';
 import TranscriptArea from '@/components/recording/TranscriptArea';
 import RightPanel from '@/components/recording/RightPanel';
 import RecordingBar from '@/components/recording/RecordingBar';
-import { useSocket } from '@/hooks/useSocket';
+import { useSocket, type SubtitlePayload } from '@/hooks/useSocket';
 import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
 import type { TranscriptEntry, MemoEntry } from '@/types/recording';
 import { createMemo } from '@/api/memo';
@@ -51,17 +51,27 @@ export default function RecordingPage() {
   }, [isPaused]);
 
   const { sendAudio, connect, disconnect } = useSocket(
-    (text) => {
-      const elapsed = getElapsed();
-      setEntries((prev) => [
-        ...prev,
-        {
-          timestamp: formatElapsed(elapsed),
-          speaker: '참석자 1',
-          speakerType: 'host',
-          text,
-        },
-      ]);
+    ({ text, speaker }: SubtitlePayload) => {
+      const speakerName = `참석자 ${speaker}`;
+      setEntries((prev) => {
+        if (prev.length > 0 && prev[prev.length - 1].speaker === speakerName) {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            ...updated[updated.length - 1],
+            text: updated[updated.length - 1].text + text,
+          };
+          return updated;
+        }
+        return [
+          ...prev,
+          {
+            timestamp: formatElapsed(getElapsed()),
+            speaker: speakerName,
+            speakerType: 'host',
+            text,
+          },
+        ];
+      });
     },
     (text) => {
       setSummaries((prev) => [...prev, text]);
@@ -115,11 +125,17 @@ export default function RecordingPage() {
     setEntries([]);
   }, [disconnect]);
 
-  const handleMemoSubmit = useCallback(async (text: string) => {
-    const elapsed = Math.floor(getElapsed() / 1000);
-    await createMemo(text, elapsed);
-    setMemos((prev) => [...prev, { timestamp: formatElapsed(elapsed * 1000), content: text }]);
-  }, [getElapsed]);
+  const handleMemoSubmit = useCallback(
+    async (text: string) => {
+      const elapsed = Math.floor(getElapsed() / 1000);
+      await createMemo(text, elapsed);
+      setMemos((prev) => [
+        ...prev,
+        { timestamp: formatElapsed(elapsed * 1000), content: text },
+      ]);
+    },
+    [getElapsed],
+  );
 
   return (
     <div className="flex h-screen w-full">
@@ -139,7 +155,12 @@ export default function RecordingPage() {
           <div className="flex-1 overflow-y-auto">
             <TranscriptArea entries={entries} />
           </div>
-          <RightPanel memos={memos} summaries={summaries} onMemoSubmit={handleMemoSubmit} defaultTab="summary" />
+          <RightPanel
+            memos={memos}
+            summaries={summaries}
+            onMemoSubmit={handleMemoSubmit}
+            defaultTab="summary"
+          />
         </div>
       </div>
 
