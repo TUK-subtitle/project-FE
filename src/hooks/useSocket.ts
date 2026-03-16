@@ -10,8 +10,13 @@ interface UseSocketReturn {
   disconnect: () => void;
 }
 
+export interface SubtitlePayload {
+  text: string;
+  speaker: number;
+}
+
 export function useSocket(
-  onSubtitleFinal: (text: string) => void,
+  onSubtitleFinal: (payload: SubtitlePayload) => void,
   onSummary: (text: string) => void,
 ): UseSocketReturn {
   const socketRef = useRef<SocketIOClient.Socket | null>(null);
@@ -45,9 +50,9 @@ export function useSocket(
     });
 
     socket.on('stt:subtitle_final', (...args: unknown[]) => {
-      const text = args[0] as string;
-      console.log('[Socket] subtitle_final:', text);
-      onSubtitleFinalRef.current(text);
+      const payload = args[0] as SubtitlePayload;
+      console.log('[Socket] subtitle_final:', payload);
+      onSubtitleFinalRef.current(payload);
     });
 
     socket.on('stt:summary', (...args: unknown[]) => {

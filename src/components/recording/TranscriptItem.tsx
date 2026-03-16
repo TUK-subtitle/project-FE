@@ -6,9 +6,13 @@ interface TranscriptItemProps {
   entry: TranscriptEntry;
 }
 
+const avatarMap: Record<string, string> = {
+  '참석자 1': participant1Image,
+  '참석자 2': participant2Image,
+};
+
 export default function TranscriptItem({ entry }: TranscriptItemProps) {
-  const isHost = entry.speakerType === 'host';
-  const avatarSrc = isHost ? participant1Image : participant2Image;
+  const avatarSrc = avatarMap[entry.speaker] ?? participant1Image;
 
   return (
     <div className="flex flex-col gap-[8px]">
