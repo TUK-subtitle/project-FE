@@ -4,12 +4,21 @@ import NoteHeader from '@/components/recording/NoteHeader';
 import TranscriptArea from '@/components/recording/TranscriptArea';
 import RightPanel from '@/components/recording/RightPanel';
 import RecordingBar from '@/components/recording/RecordingBar';
+import FinalSummaryTab from '@/components/recording/FinalSummaryTab';
 import { useSocket, type SubtitlePayload } from '@/hooks/useSocket';
 import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
 import type { TranscriptEntry, MemoEntry } from '@/types/recording';
 import { createMemo } from '@/api/memo';
+import { getFinalSummary, requestFinalSummary } from '@/api/summary';
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+type MainTab = 'transcript' | 'summary';
+const FINAL_SUMMARY_PENDING_TEXT =
+  '아직 최종 요약본이 생성되지 않았거나 해당 강의를 찾을 수 없습니다.';
+
+function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
 
 function formatCurrentDate(): string {
   const now = new Date();
@@ -37,6 +46,9 @@ export default function RecordingPage() {
   const [memos, setMemos] = useState<MemoEntry[]>([]);
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
+  const [activeMainTab, setActiveMainTab] = useState<MainTab>('transcript');
+  const [finalSummary, setFinalSummary] = useState('');
+  const [isFinalSummaryLoading, setIsFinalSummaryLoading] = useState(false);
 
   const audioCaptureRef = useRef<AudioCapture | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -92,6 +104,8 @@ export default function RecordingPage() {
     setIsRecording(true);
     setIsPaused(false);
     setEntries([]);
+    setFinalSummary('');
+    setIsFinalSummaryLoading(false);
   }, [connect, sendAudio]);
 
   const handleTogglePause = useCallback(() => {
@@ -108,13 +122,44 @@ export default function RecordingPage() {
     }
   }, [isPaused]);
 
+  const loadFinalSummary = useCallback(async () => {
+    setIsFinalSummaryLoading(true);
+
+    try {
+      await wait(500);
+      await requestFinalSummary();
+
+      for (let attempt = 0; attempt < 10; attempt += 1) {
+        const summary = await getFinalSummary();
+
+        if (summary && summary !== FINAL_SUMMARY_PENDING_TEXT) {
+          setFinalSummary(summary);
+          return;
+        }
+
+        if (attempt < 9) {
+          await wait(2000);
+        }
+      }
+
+      setFinalSummary(FINAL_SUMMARY_PENDING_TEXT);
+    } catch (error) {
+      console.error('[Summary] 전체 요약 조회 실패:', error);
+      setFinalSummary('전체 요약을 불러오지 못했습니다.');
+    } finally {
+      setIsFinalSummaryLoading(false);
+    }
+  }, []);
+
   const handleStop = useCallback(() => {
     audioCaptureRef.current?.stop();
     audioCaptureRef.current = null;
+    setActiveMainTab('summary');
     disconnect();
+    void loadFinalSummary();
     setIsRecording(false);
     setIsPaused(false);
-  }, [disconnect]);
+  }, [disconnect, loadFinalSummary]);
 
   const handleCancel = useCallback(() => {
     audioCaptureRef.current?.stop();
@@ -123,6 +168,7 @@ export default function RecordingPage() {
     setIsRecording(false);
     setIsPaused(false);
     setEntries([]);
+    setFinalSummary('');
   }, [disconnect]);
 
   const handleMemoSubmit = useCallback(
@@ -153,8 +199,32 @@ export default function RecordingPage() {
 
         {/* 하단 분할 영역 */}
         <div className="flex min-h-0 flex-1">
-          <div className="flex-1 overflow-y-auto">
-            <TranscriptArea entries={entries} />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <div className="flex h-[56px] shrink-0 border-b border-[#c4c4c4]">
+              <MainTabButton
+                active={activeMainTab === 'transcript'}
+                onClick={() => setActiveMainTab('transcript')}
+              >
+                음성 스크립트
+              </MainTabButton>
+              <MainTabButton
+                active={activeMainTab === 'summary'}
+                onClick={() => setActiveMainTab('summary')}
+              >
+                전체 요약
+              </MainTabButton>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {activeMainTab === 'transcript' ? (
+                <TranscriptArea entries={entries} />
+              ) : (
+                <FinalSummaryTab
+                  summary={finalSummary}
+                  isLoading={isFinalSummaryLoading}
+                />
+              )}
+            </div>
           </div>
           <RightPanel
             memos={memos}
@@ -173,6 +243,33 @@ export default function RecordingPage() {
         onStop={handleStop}
         onCancel={handleCancel}
       />
+    </div>
+  );
+}
+
+function MainTabButton({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <div
+      className={`flex w-[263px] items-center justify-center ${
+        active ? 'border-b-2 border-black' : ''
+      }`}
+    >
+      <button
+        className={`cursor-pointer text-[16px] leading-normal font-bold transition-colors ${
+          active ? 'text-black' : 'text-[#c4c4c4] hover:text-[#727272]'
+        }`}
+        onClick={onClick}
+      >
+        {children}
+      </button>
     </div>
   );
 }
