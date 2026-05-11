@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { MdChevronRight } from 'react-icons/md';
 
 const PROFILE_IMAGE = '/Group%20105.png';
+const PAGE_WIDTH_CLASS = 'max-w-[1180px]';
 
 const scheduleItems = [
   {
@@ -24,68 +25,76 @@ const scheduleItems = [
 const lectures = [
   {
     subject: '소프트웨어공학',
-    period: '2026.03.12 ~ 수강중',
+    period: '2026.03.02 ~ 수강중',
     notes: '15개 노트',
     color: '#4adf96',
   },
   {
     subject: '자료구조',
-    period: '2026.03.12 ~ 수강중',
+    period: '2026.03.02 ~ 수강중',
     notes: '8개 노트',
     color: '#ff7f29',
   },
   {
     subject: '소프트웨어공학',
-    period: '2026.03.12 ~ 수강중',
+    period: '2026.03.02 ~ 수강중',
     notes: '16개 노트',
     color: '#34cfe4',
   },
   {
     subject: '물리학실험',
-    period: '2026.03.12 ~ 수강중',
+    period: '2026.03.02 ~ 수강중',
     notes: '15개 노트',
     color: '#ff6ec5',
   },
 ] as const;
 
 const days = [
-  ['월', '1'],
-  ['화', '2'],
-  ['수', '3'],
-  ['목', '4'],
-  ['금', '5'],
-  ['토', '6'],
-  ['일', '7'],
+  ['월', '11'],
+  ['화', '12'],
+  ['수', '13'],
+  ['목', '14'],
+  ['금', '15'],
+  ['토', '16'],
+  ['일', '17'],
 ] as const;
 
 export default function MyPage() {
   return (
     <div className="min-h-screen bg-[#fdfdfd] text-[#545454]">
-      <header className="sticky top-0 z-20 flex h-[103px] items-center justify-between bg-white px-[66px]">
-        <Link
-          to="/mypage"
-          className="font-['Chab'] text-[32px] leading-[64px] text-[#00d56e]"
+      <header className="sticky top-0 z-20 bg-white">
+        <div
+          className={`mx-auto flex h-[103px] ${PAGE_WIDTH_CLASS} items-center justify-between`}
         >
-          SpeakView
-        </Link>
+          <Link
+            to="/mypage"
+            className="font-['Chab'] text-[32px] leading-[64px] text-[#00d56e]"
+          >
+            SpeakView
+          </Link>
 
-        <nav className="flex items-center gap-[78px] text-[16px] font-semibold">
-          <button className="cursor-pointer text-[#545454]">서비스소개</button>
-          <Link to="/recording" className="text-[#545454]">
-            실시간자막
-          </Link>
-          <button className="cursor-pointer text-[#545454]">전체 노트</button>
-          <Link to="/mypage" className="text-[#00d56e]">
-            마이페이지
-          </Link>
-        </nav>
+          <nav className="flex items-center gap-[78px] text-[16px] font-semibold">
+            <button className="cursor-pointer text-[#545454]">
+              서비스소개
+            </button>
+            <Link to="/recording" className="text-[#545454]">
+              실시간자막
+            </Link>
+            <button className="cursor-pointer text-[#545454]">전체 노트</button>
+            <Link to="/mypage" className="text-[#00d56e]">
+              마이페이지
+            </Link>
+          </nav>
+        </div>
       </header>
 
       <main>
-        <section className="bg-gradient-to-b from-[#edf5f1] from-[66%] to-[#fdfdfd] px-[268px] pt-[153px] pb-[92px]">
-          <div className="grid grid-cols-[450px_593px] items-start justify-center gap-[180px]">
+        <section className="bg-gradient-to-b from-[#edf5f1] from-[66%] to-[#fdfdfd] pt-[128px] pb-[84px]">
+          <div
+            className={`mx-auto grid ${PAGE_WIDTH_CLASS} grid-cols-[360px_540px] items-start justify-between`}
+          >
             <section className="flex flex-col items-start">
-              <div className="size-[450px] overflow-hidden rounded-full bg-[#00d56e]">
+              <div className="size-[360px] overflow-hidden">
                 <img
                   src={PROFILE_IMAGE}
                   alt="최세연 프로필"
@@ -106,14 +115,21 @@ export default function MyPage() {
             <ScheduleCard />
           </div>
 
-          <StatsCard />
+          <div className={`mx-auto ${PAGE_WIDTH_CLASS}`}>
+            <StatsCard />
+          </div>
         </section>
 
-        <section className="px-[268px] pt-[126px] pb-[180px]">
+        <section
+          className={`mx-auto ${PAGE_WIDTH_CLASS} pt-[112px] pb-[180px]`}
+        >
           <LectureTabs />
           <div className="mt-[82px] flex flex-col gap-[24px]">
             {lectures.map((lecture) => (
-              <LectureRow key={`${lecture.subject}-${lecture.color}`} {...lecture} />
+              <LectureRow
+                key={`${lecture.subject}-${lecture.color}`}
+                {...lecture}
+              />
             ))}
           </div>
         </section>
@@ -124,31 +140,29 @@ export default function MyPage() {
 
 function ScheduleCard() {
   return (
-    <section className="relative h-[496px] w-[593px] rounded-[20px] bg-white px-[31px] pt-[29px]">
+    <section className="relative h-[496px] w-[540px] rounded-[20px] bg-white px-[28px] pt-[29px]">
       <div className="flex items-start justify-between">
         <div>
           <h2 className="text-[32px] leading-none font-bold text-black">
-            오늘, 목요일
+            오늘, 월요일
           </h2>
         </div>
-        <p className="mt-[5px] text-[24px] font-medium text-[#959595]">
-          2026.05.03
-        </p>
-        <button className="mt-[9px] cursor-pointer text-[24px] font-medium text-[#959595]">
+        <p className="text-[24px] font-medium text-[#959595]">2026.05.11</p>
+        <button className="cursor-pointer text-[24px] font-medium text-[#959595]">
           더보기
         </button>
       </div>
 
       <div className="mt-[32px] grid grid-cols-7 border-b border-[#c4c4c4] pb-[28px]">
         {days.map(([day, date]) => {
-          const active = day === '목';
+          const active = day === '월';
           return (
             <div key={day} className="flex flex-col items-center gap-[16px]">
-              <span className="text-[20px] font-semibold text-[#545454]">
+              <span className="text-[18px] font-semibold text-[#545454]">
                 {day}
               </span>
               <span
-                className={`flex size-[50px] items-center justify-center rounded-full text-[32px] font-bold ${
+                className={`flex size-[44px] items-center justify-center rounded-full text-[28px] font-bold ${
                   active ? 'bg-[#00d56e] text-white' : 'text-black'
                 }`}
               >
@@ -184,13 +198,13 @@ function ScheduleItem({
   };
 
   return (
-    <div className="flex h-[64px] items-center gap-[28px] rounded-[10px] bg-white px-[17px] shadow-[0_0_4px_rgba(0,0,0,0.25)]">
+    <div className="flex h-[64px] items-center gap-[20px] rounded-[10px] bg-white px-[17px] shadow-[0_0_4px_rgba(0,0,0,0.25)]">
       <span
-        className={`flex h-[35px] w-[150px] items-center justify-center rounded-[5px] text-[20px] font-medium ${styles[tone]}`}
+        className={`flex h-[35px] w-[140px] items-center justify-center rounded-[5px] text-[18px] font-medium ${styles[tone]}`}
       >
         {subject}
       </span>
-      <span className="min-w-0 truncate text-[20px] font-medium text-[#3a3a3a]">
+      <span className="min-w-0 truncate text-[18px] font-medium text-[#3a3a3a]">
         {title}
       </span>
     </div>
@@ -205,7 +219,7 @@ function StatsCard() {
   ];
 
   return (
-    <section className="mx-auto mt-[85px] grid h-[214px] max-w-[1384px] grid-cols-3 rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
+    <section className="mt-[85px] grid h-[214px] grid-cols-3 rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
       {stats.map(([label, value], index) => (
         <div
           key={label}
@@ -225,14 +239,9 @@ function LectureTabs() {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <div className="flex gap-[154px]">
-          <button className="cursor-pointer text-[20px] font-bold text-[#00d56e]">
-            강의목록
-          </button>
-          <button className="cursor-pointer text-[20px] font-bold text-[#545454]">
-            오답노트
-          </button>
-        </div>
+        <button className="cursor-pointer text-[20px] font-bold text-[#00d56e]">
+          강의목록
+        </button>
 
         <div className="flex gap-[76px] text-[20px] font-medium text-[#545454]">
           <button className="cursor-pointer">날짜순</button>
@@ -240,7 +249,7 @@ function LectureTabs() {
         </div>
       </div>
       <div className="relative mt-[26px] h-[8px] border-t border-[#c4c4c4]">
-        <div className="absolute left-0 top-[-4px] h-[8px] w-[136px] bg-[#00d56e]" />
+        <div className="absolute top-[-4px] left-0 h-[8px] w-[136px] bg-[#00d56e]" />
       </div>
     </div>
   );
@@ -258,14 +267,15 @@ function LectureRow({
   color: string;
 }) {
   return (
-    <button className="flex h-[100px] w-full cursor-pointer items-center rounded-[20px] border border-[#c4c4c4] bg-white px-[162px] text-left shadow-[0_4px_15px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-[1px]">
-      <span className="w-[320px] text-[24px] font-bold" style={{ color }}>
+    <button className="grid h-[100px] w-full cursor-pointer grid-cols-[250px_1fr_150px] items-center rounded-[20px] border border-[#c4c4c4] bg-white px-[120px] text-left shadow-[0_4px_15px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-[1px]">
+      <span className="text-[24px] font-bold" style={{ color }}>
         {subject}
       </span>
-      <span className="flex-1 text-[20px] font-medium text-[#545454]">
-        {period}
-      </span>
-      <span className="flex items-center gap-[8px] text-[18px] font-medium" style={{ color }}>
+      <span className="text-[20px] font-medium text-[#545454]">{period}</span>
+      <span
+        className="flex items-center justify-end gap-[8px] text-[18px] font-medium"
+        style={{ color }}
+      >
         {notes}
         <MdChevronRight size={22} />
       </span>
