@@ -1,3 +1,5 @@
+import ReactMarkdown from 'react-markdown';
+
 interface FinalSummaryTabProps {
   summary: string;
   isLoading: boolean;
@@ -33,9 +35,46 @@ export default function FinalSummaryTab({
 
   return (
     <div className="px-[71px] pt-[38px] pb-[120px]">
-      <p className="whitespace-pre-wrap text-[16px] leading-[1.7] font-medium text-black">
+      <ReactMarkdown
+        components={{
+          h1: ({ children }) => (
+            <h1 className="mb-[18px] text-[24px] leading-[1.5] font-bold text-black">
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="mt-[28px] mb-[12px] text-[21px] leading-[1.5] font-bold text-black">
+              {children}
+            </h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="mt-[22px] mb-[10px] text-[18px] leading-[1.5] font-bold text-black">
+              {children}
+            </h3>
+          ),
+          p: ({ children }) => (
+            <p className="mb-[12px] text-[16px] leading-[1.7] font-medium text-black">
+              {children}
+            </p>
+          ),
+          ul: ({ children }) => (
+            <ul className="mb-[16px] list-disc pl-[24px] text-[16px] leading-[1.7] font-medium text-black">
+              {children}
+            </ul>
+          ),
+          ol: ({ children }) => (
+            <ol className="mb-[16px] list-decimal pl-[24px] text-[16px] leading-[1.7] font-medium text-black">
+              {children}
+            </ol>
+          ),
+          li: ({ children }) => <li className="mb-[4px]">{children}</li>,
+          strong: ({ children }) => (
+            <strong className="font-bold text-black">{children}</strong>
+          ),
+        }}
+      >
         {summary}
-      </p>
+      </ReactMarkdown>
     </div>
   );
 }
