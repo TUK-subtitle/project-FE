@@ -16,9 +16,14 @@ export default function MemoTab({ memos, onSubmit }: MemoTabProps) {
       const trimmed = text.trim();
       if (!trimmed) return;
       setIsSubmitting(true);
-      await onSubmit(trimmed);
-      setText('');
-      setIsSubmitting(false);
+      try {
+        await onSubmit(trimmed);
+        setText('');
+      } catch (error) {
+        console.error('[Memo] 저장 실패:', error);
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 

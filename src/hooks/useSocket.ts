@@ -2,6 +2,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import io from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string;
+const CONTENT_ID = 1;
 
 interface UseSocketReturn {
   isConnected: boolean;
@@ -13,6 +14,7 @@ interface UseSocketReturn {
 export interface SubtitlePayload {
   text: string;
   speaker: number;
+  contentId: number;
 }
 
 export function useSocket(
@@ -41,6 +43,8 @@ export function useSocket(
 
     socket.on('connect', () => {
       console.log('[Socket] 연결 성공, id:', socket.id);
+      socket.emit('stt:join', { contentId: CONTENT_ID });
+      console.log('[Socket] stt:join 전송, contentId:', CONTENT_ID);
       setIsConnected(true);
     });
 
@@ -49,9 +53,9 @@ export function useSocket(
       setIsConnected(false);
     });
 
-    socket.on('stt:subtitle_final', (...args: unknown[]) => {
+    socket.on('stt:subtitle', (...args: unknown[]) => {
       const payload = args[0] as SubtitlePayload;
-      console.log('[Socket] subtitle_final:', payload);
+      console.log('[Socket] subtitle:', payload);
       onSubtitleFinalRef.current(payload);
     });
 

@@ -128,10 +128,11 @@ export default function RecordingPage() {
   const handleMemoSubmit = useCallback(
     async (text: string) => {
       const elapsed = Math.floor(getElapsed() / 1000);
-      await createMemo(text, elapsed);
+      const timestamp = formatElapsed(elapsed * 1000);
+      await createMemo(text, timestamp);
       setMemos((prev) => [
         ...prev,
-        { timestamp: formatElapsed(elapsed * 1000), content: text },
+        { timestamp, content: text },
       ]);
     },
     [getElapsed],
