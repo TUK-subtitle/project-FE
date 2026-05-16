@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const SHOWCASE_STEPS = [
   {
-    eyebrow: 'REAL-TIME',
+    eyebrow: 'FEATURE 01',
     keyword: 'Real-time',
     title: '말하는 순간 바로 보이는\n실시간 자막',
     description:
@@ -12,7 +12,7 @@ const SHOWCASE_STEPS = [
     alt: 'SpeakView 실시간 자막 화면',
   },
   {
-    eyebrow: 'SUMMARY',
+    eyebrow: 'FEATURE 02',
     keyword: 'Summary',
     title: '끝난 뒤에는\n핵심만 남는 전체 요약',
     description:
@@ -284,7 +284,7 @@ function ShowcaseCard({
       <p className="text-[14px] font-semibold tracking-[0.08em] text-[#00d56e]">
         {step.eyebrow}
       </p>
-      <h2 className="mt-4 text-[18px] leading-[1.28] font-semibold tracking-[-0.035em] text-[#111111] sm:text-[22px]">
+      <h2 className="mt-2 text-[18px] leading-[1.28] font-semibold tracking-[-0.035em] text-[#111111] sm:text-[22px]">
         {step.title.split('\n').map((line) => (
           <span key={`${step.keyword}-${line}`}>
             {line}
