@@ -115,7 +115,7 @@ export default function MainPage() {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-white text-[#545454]">
-      <header className="sticky top-0 z-20 bg-white">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
         <div
           className="mx-auto flex h-[103px] w-full items-center justify-between px-[40px] sm:px-[56px] lg:px-[72px]"
         >
@@ -141,7 +141,7 @@ export default function MainPage() {
         </div>
       </header>
 
-      <main>
+      <main className="pt-[103px]">
         <section className="relative mx-auto flex min-h-[calc(100vh-103px)] w-full max-w-[1440px] items-center justify-center px-6 py-20">
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px]"
