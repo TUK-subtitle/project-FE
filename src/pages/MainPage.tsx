@@ -20,6 +20,15 @@ const SHOWCASE_STEPS = [
     image: '/final-summary-preview.png',
     alt: 'SpeakView 전체 요약 화면',
   },
+  {
+    eyebrow: 'FEATURE 03',
+    keyword: 'My Page',
+    title: '나만의 모든 기록이\n체계적으로 관리되는 마이페이지',
+    description:
+      '학업 정보와 일자별 스크립트 관리,\n요약 노트와 복습 퀴즈를 통해\n학습 효율을 극대화할 수 있습니다.',
+    image: '/mypage-preview.png',
+    alt: 'SpeakView 마이페이지 화면',
+  },
 ] as const;
 
 export default function MainPage() {
@@ -91,34 +100,52 @@ export default function MainPage() {
     Math.sin(time / 1000) * 200 + Math.cos(time / 2200) * 80;
   const secondaryScale = 1.02 + (Math.cos(time / 1350) + 1) * 0.08;
   const secondaryOpacity = 0.12 + ((Math.cos(time / 1200) + 1) / 2) * 0.1;
-  const realtimeFade = clamp((showcaseProgress - 0.36) / 0.22, 0, 1);
-  const realtimeOpacity = 1 - realtimeFade;
-  const summaryOpacity = clamp((showcaseProgress - 0.58) / 0.18, 0, 1);
-  const realtimeContentProgress = clamp((showcaseProgress - 0.04) / 0.56, 0, 1);
-  const summaryContentProgress = clamp((showcaseProgress - 0.62) / 0.3, 0, 1);
+
+  // 3-step showcase animation logic
+  const realtimeOpacity = clamp(1 - (showcaseProgress - 0.28) / 0.12, 0, 1);
+  const summaryOpacity = clamp(
+    showcaseProgress < 0.4 ? (showcaseProgress - 0.28) / 0.12 : 1 - (showcaseProgress - 0.62) / 0.12,
+    0,
+    1
+  );
+  const mypageOpacity = clamp((showcaseProgress - 0.62) / 0.12, 0, 1);
+
+  const realtimeContentProgress = clamp(showcaseProgress / 0.4, 0, 1);
+  const summaryContentProgress = clamp((showcaseProgress - 0.3) / 0.4, 0, 1);
+  const mypageContentProgress = clamp((showcaseProgress - 0.6) / 0.4, 0, 1);
+
   const realtimeContentTranslateY =
-    realtimeContentProgress < 0.22
-      ? 36 - (realtimeContentProgress / 0.22) * 88
-      : realtimeContentProgress < 0.76
+    realtimeContentProgress < 0.25
+      ? 36 - (realtimeContentProgress / 0.25) * 88
+      : realtimeContentProgress < 0.75
         ? -52
-        : -52 - ((realtimeContentProgress - 0.76) / 0.24) * 92;
+        : -52 - ((realtimeContentProgress - 0.75) / 0.25) * 92;
+
   const summaryContentTranslateY =
-    summaryContentProgress < 0.14
-      ? 36 - (summaryContentProgress / 0.14) * 92
-      : summaryContentProgress < 0.9
-        ? -56
-        : -56 - ((summaryContentProgress - 0.9) / 0.1) * 88;
+    summaryContentProgress < 0.25
+      ? 36 - (summaryContentProgress / 0.25) * 88
+      : summaryContentProgress < 0.75
+        ? -52
+        : -52 - ((summaryContentProgress - 0.75) / 0.25) * 92;
+
+  const mypageContentTranslateY =
+    mypageContentProgress < 0.25
+      ? 36 - (mypageContentProgress / 0.25) * 88
+      : mypageContentProgress < 0.9
+        ? -52
+        : -52 - ((mypageContentProgress - 0.9) / 0.1) * 88;
+
   const showcaseSectionTop = showcaseRef.current?.offsetTop ?? 0;
   const showcaseSectionHeight = showcaseRef.current?.offsetHeight ?? 0;
-  const showcaseCanvasHeight = Math.max(viewportHeight - 103, 0);
-  const showcasePinStart = showcaseSectionTop - 103;
+  const showcaseCanvasHeight = Math.max(viewportHeight - 80, 0);
+  const showcasePinStart = showcaseSectionTop - 80;
   const showcasePinEnd = showcaseSectionTop + showcaseSectionHeight - viewportHeight;
   const isShowcasePinned =
     scrollY >= showcasePinStart && scrollY <= showcasePinEnd;
   const isShowcaseAfter =
     showcaseCanvasHeight > 0 && scrollY > showcasePinEnd;
   const showcaseFrameTop = isShowcasePinned
-    ? 103
+    ? 80
     : isShowcaseAfter
       ? showcaseSectionHeight - showcaseCanvasHeight
       : 0;
@@ -127,7 +154,7 @@ export default function MainPage() {
     <div className="min-h-screen overflow-x-hidden bg-white text-[#545454]">
       <header className="fixed top-0 left-0 right-0 z-50 bg-white">
         <div
-          className="mx-auto flex h-[103px] w-full items-center justify-between px-[40px] sm:px-[56px] lg:px-[72px]"
+          className="mx-auto flex h-[80px] w-full items-center justify-between px-[40px] sm:px-[56px] lg:px-[72px]"
         >
           <Link
             to="/main"
@@ -151,8 +178,8 @@ export default function MainPage() {
         </div>
       </header>
 
-      <main className="pt-[103px]">
-        <section className="relative mx-auto flex min-h-[calc(100vh-103px)] w-full max-w-[1440px] items-center justify-center px-6 py-20">
+      <main className="pt-[80px]">
+        <section className="relative mx-auto flex min-h-[calc(100vh-80px)] w-full max-w-[1440px] items-center justify-center px-6 py-20">
           <div
             className="pointer-events-none absolute left-1/2 top-1/2 h-[320px] w-[320px]"
             style={{
@@ -228,7 +255,7 @@ export default function MainPage() {
 
         <section
           ref={showcaseRef}
-          className="relative min-h-[260vh] bg-white px-6 pb-12"
+          className="relative min-h-[380vh] bg-white px-6 pb-12"
         >
           <div
             className={isShowcasePinned ? 'fixed left-1/2 z-10' : 'absolute left-1/2'}
@@ -240,32 +267,45 @@ export default function MainPage() {
             }}
           >
             <div className="relative h-full overflow-hidden">
-            <div
-              className="absolute inset-0"
-              style={{
-                opacity: realtimeOpacity,
-              }}
-            >
-              <ShowcaseScene
-                step={SHOWCASE_STEPS[0]}
-                mode="base"
-                contentTranslateY={realtimeContentTranslateY}
-              />
-            </div>
+              <div
+                className="absolute inset-0"
+                style={{
+                  opacity: realtimeOpacity,
+                }}
+              >
+                <ShowcaseScene
+                  step={SHOWCASE_STEPS[0]}
+                  mode="base"
+                  contentTranslateY={realtimeContentTranslateY}
+                />
+              </div>
 
-            <div
-              className="absolute inset-0"
-              style={{
-                opacity: summaryOpacity,
-              }}
-            >
-              <ShowcaseScene
-                step={SHOWCASE_STEPS[1]}
-                mode="overlay"
-                contentTranslateY={summaryContentTranslateY}
-              />
+              <div
+                className="absolute inset-0"
+                style={{
+                  opacity: summaryOpacity,
+                }}
+              >
+                <ShowcaseScene
+                  step={SHOWCASE_STEPS[1]}
+                  mode="overlay"
+                  contentTranslateY={summaryContentTranslateY}
+                />
+              </div>
+
+              <div
+                className="absolute inset-0"
+                style={{
+                  opacity: mypageOpacity,
+                }}
+              >
+                <ShowcaseScene
+                  step={SHOWCASE_STEPS[2]}
+                  mode="overlay"
+                  contentTranslateY={mypageContentTranslateY}
+                />
+              </div>
             </div>
-          </div>
           </div>
         </section>
 
@@ -292,8 +332,13 @@ function ShowcaseCard({
           </span>
         ))}
       </h2>
-      <p className="mt-3 text-[15px] leading-[1.5] text-[#6c736f]">
-        {step.description}
+      <p className="mt-3 text-[15px] leading-[1.5] text-[#6c736f] break-keep">
+        {step.description.split('\n').map((line, i) => (
+          <span key={i}>
+            {line}
+            <br />
+          </span>
+        ))}
       </p>
     </div>
   );
@@ -309,7 +354,6 @@ function ShowcaseScene({
   contentTranslateY: number;
 }) {
   const isOverlay = mode === 'overlay';
-  const isSummary = step.keyword === 'Summary';
 
   return (
     <div className={`relative h-full ${isOverlay ? 'bg-white' : ''}`}>
@@ -334,7 +378,7 @@ function ShowcaseScene({
         <div
           className="absolute bottom-[10%] w-full max-w-[700px] right-[5%]"
         >
-          <div className="overflow-hidden rounded-[36px] border border-[#edf1ee] bg-white shadow-[0_30px_90px_rgba(17,24,39,0.1)]">
+          <div className="overflow-hidden rounded-[36px] border border-gray-100 bg-white shadow-[0_30px_60px_rgba(0,0,0,0.12)]">
             <img
               src={step.image}
               alt={step.alt}

@@ -82,26 +82,26 @@ export default function MyPage() {
   const { fullDate, dayName, weekDays, todayDate } = getTodayInfo();
 
   return (
-    <div className="min-h-screen bg-[#fdfdfd] text-[#545454]">
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
+    <div className="min-h-screen overflow-x-hidden bg-white text-[#545454]">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white">
         <div
           className="mx-auto flex h-[80px] w-full items-center justify-between px-[40px] sm:px-[56px] lg:px-[72px]"
         >
           <Link
             to="/main"
-            className="font-['Chab'] text-[24px] text-[#00d56e]"
+            className="font-['Chab'] text-[26px] leading-[64px] text-[#00d56e]"
           >
             SpeakView
           </Link>
 
-          <nav className="ml-auto flex items-center gap-[40px] text-[15px] font-semibold">
-            <Link to="/main" className="text-[#545454] hover:text-[#00d56e] transition-colors">
+          <nav className="ml-auto flex items-center gap-[78px] text-[16px] font-semibold">
+            <Link to="/main" className="text-[#545454]">
               서비스소개
             </Link>
-            <Link to="/recording" className="text-[#545454] hover:text-[#00d56e] transition-colors">
+            <Link to="/recording" className="text-[#545454]">
               실시간자막
             </Link>
-            <button className="cursor-pointer text-[#545454] hover:text-[#00d56e] transition-colors">전체 노트</button>
+            <button className="cursor-pointer text-[#545454]">전체 노트</button>
             <Link to="/mypage" className="text-[#00d56e]">
               마이페이지
             </Link>
