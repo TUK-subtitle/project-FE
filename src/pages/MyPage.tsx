@@ -49,38 +49,59 @@ const lectures = [
   },
 ] as const;
 
-const days = [
-  ['월', '11'],
-  ['화', '12'],
-  ['수', '13'],
-  ['목', '14'],
-  ['금', '15'],
-  ['토', '16'],
-  ['일', '17'],
-] as const;
+const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
+
+function getTodayInfo() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const date = String(now.getDate()).padStart(2, '0');
+  const dayName = DAY_NAMES[now.getDay()];
+
+  // Get current week (Mon-Sun)
+  const currentDay = now.getDay(); // 0 (Sun) to 6 (Sat)
+  const diffToMonday = currentDay === 0 ? -6 : 1 - currentDay;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+
+  const weekDays = Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return [DAY_NAMES[d.getDay()], String(d.getDate())] as [string, string];
+  });
+
+  return {
+    fullDate: `${year}.${month}.${date}`,
+    dayName,
+    weekDays,
+    todayDate: String(now.getDate()),
+  };
+}
 
 export default function MyPage() {
+  const { fullDate, dayName, weekDays, todayDate } = getTodayInfo();
+
   return (
     <div className="min-h-screen bg-[#fdfdfd] text-[#545454]">
-      <header className="sticky top-0 z-20 bg-white">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-100">
         <div
-          className={`mx-auto flex h-[103px] ${PAGE_WIDTH_CLASS} items-center justify-between`}
+          className="mx-auto flex h-[80px] w-full items-center justify-between px-[40px] sm:px-[56px] lg:px-[72px]"
         >
           <Link
-            to="/mypage"
-            className="font-['Chab'] text-[32px] leading-[64px] text-[#00d56e]"
+            to="/main"
+            className="font-['Chab'] text-[24px] text-[#00d56e]"
           >
             SpeakView
           </Link>
 
-          <nav className="flex items-center gap-[78px] text-[16px] font-semibold">
-            <button className="cursor-pointer text-[#545454]">
+          <nav className="ml-auto flex items-center gap-[40px] text-[15px] font-semibold">
+            <Link to="/main" className="text-[#545454] hover:text-[#00d56e] transition-colors">
               서비스소개
-            </button>
-            <Link to="/recording" className="text-[#545454]">
+            </Link>
+            <Link to="/recording" className="text-[#545454] hover:text-[#00d56e] transition-colors">
               실시간자막
             </Link>
-            <button className="cursor-pointer text-[#545454]">전체 노트</button>
+            <button className="cursor-pointer text-[#545454] hover:text-[#00d56e] transition-colors">전체 노트</button>
             <Link to="/mypage" className="text-[#00d56e]">
               마이페이지
             </Link>
@@ -88,43 +109,49 @@ export default function MyPage() {
         </div>
       </header>
 
-      <main>
-        <section className="bg-gradient-to-b from-[#edf5f1] from-[66%] to-[#fdfdfd] pt-[128px] pb-[84px]">
+      <main className="pt-[80px]">
+        <section className="bg-gradient-to-b from-[#f7faf8] to-[#fdfdfd] pt-[100px] pb-[60px]">
           <div
-            className={`mx-auto grid ${PAGE_WIDTH_CLASS} grid-cols-[360px_540px] items-start justify-between`}
+            className={`mx-auto flex w-full ${PAGE_WIDTH_CLASS} items-start`}
           >
-            <section className="flex flex-col items-start">
-              <div className="size-[360px] overflow-hidden">
-                <img
-                  src={PROFILE_IMAGE}
-                  alt="최세연 프로필"
-                  className="h-full w-full object-cover"
-                />
-              </div>
+            <div className="flex flex-1 justify-center">
+              <section className="flex flex-col items-center">
+                <div className="size-[280px] overflow-hidden">
+                  <img
+                    src={PROFILE_IMAGE}
+                    alt="최세연 프로필"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+              </section>
+            </div>
 
-              <div className="mt-[52px] flex items-end gap-[8px]">
-                <h1 className="text-[48px] leading-none font-bold text-black">
-                  최세연
-                </h1>
-                <span className="text-[32px] leading-none font-medium text-[#545454]">
-                  님
-                </span>
-              </div>
-            </section>
-
-            <ScheduleCard />
+            <ScheduleCard 
+              fullDate={fullDate} 
+              dayName={dayName} 
+              weekDays={weekDays} 
+              todayDate={todayDate} 
+            />
           </div>
 
-          <div className={`mx-auto ${PAGE_WIDTH_CLASS}`}>
+          <div className={`mx-auto ${PAGE_WIDTH_CLASS} mt-[60px] relative`}>
+            <div className="absolute top-[-52px] left-[20px] flex items-baseline gap-[4px]">
+              <h1 className="text-[26px] font-bold text-[#111111]">
+                최세연
+              </h1>
+              <span className="text-[16px] font-medium text-[#777777]">
+                님
+              </span>
+            </div>
             <StatsCard />
           </div>
         </section>
 
         <section
-          className={`mx-auto ${PAGE_WIDTH_CLASS} pt-[112px] pb-[180px]`}
+          className={`mx-auto ${PAGE_WIDTH_CLASS} pt-[80px] pb-[120px]`}
         >
           <LectureTabs />
-          <div className="mt-[82px] flex flex-col gap-[24px]">
+          <div className="mt-[48px] flex flex-col gap-[16px]">
             {lectures.map((lecture) => (
               <LectureRow
                 key={`${lecture.subject}-${lecture.color}`}
@@ -138,32 +165,42 @@ export default function MyPage() {
   );
 }
 
-function ScheduleCard() {
+function ScheduleCard({ 
+  fullDate, 
+  dayName, 
+  weekDays, 
+  todayDate 
+}: { 
+  fullDate: string; 
+  dayName: string; 
+  weekDays: [string, string][]; 
+  todayDate: string; 
+}) {
   return (
-    <section className="relative h-[496px] w-[540px] rounded-[20px] bg-white px-[28px] pt-[29px]">
-      <div className="flex items-start justify-between">
-        <div>
-          <h2 className="text-[32px] leading-none font-bold text-black">
-            오늘, 월요일
+    <section className="relative h-auto w-[460px] rounded-[24px] bg-white p-[24px] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-50">
+      <div className="flex items-center justify-between">
+        <div className="flex items-baseline gap-[10px]">
+          <h2 className="text-[20px] font-bold text-[#111111]">
+            오늘, {dayName}요일
           </h2>
+          <p className="text-[14px] font-medium text-[#999999]">{fullDate}</p>
         </div>
-        <p className="text-[24px] font-medium text-[#959595]">2026.05.11</p>
-        <button className="cursor-pointer text-[24px] font-medium text-[#959595]">
+        <button className="cursor-pointer text-[13px] font-semibold text-[#00d56e] hover:underline">
           더보기
         </button>
       </div>
 
-      <div className="mt-[32px] grid grid-cols-7 border-b border-[#c4c4c4] pb-[28px]">
-        {days.map(([day, date]) => {
-          const active = day === '월';
+      <div className="mt-[20px] grid grid-cols-7 border-b border-gray-100 pb-[20px]">
+        {weekDays.map(([day, date]) => {
+          const active = date === todayDate;
           return (
-            <div key={day} className="flex flex-col items-center gap-[16px]">
-              <span className="text-[18px] font-semibold text-[#545454]">
+            <div key={`${day}-${date}`} className="flex flex-col items-center gap-[10px]">
+              <span className="text-[13px] font-medium text-[#888888]">
                 {day}
               </span>
               <span
-                className={`flex size-[44px] items-center justify-center rounded-full text-[28px] font-bold ${
-                  active ? 'bg-[#00d56e] text-white' : 'text-black'
+                className={`flex size-[30px] items-center justify-center rounded-full text-[14px] font-bold transition-all ${
+                  active ? 'bg-[#00d56e] text-white shadow-md shadow-[#00d56e]/20' : 'text-[#333333] hover:bg-gray-50'
                 }`}
               >
                 {date}
@@ -173,7 +210,7 @@ function ScheduleCard() {
         })}
       </div>
 
-      <div className="mt-[27px] flex flex-col gap-[18px]">
+      <div className="mt-[20px] flex flex-col gap-[10px]">
         {scheduleItems.map((item) => (
           <ScheduleItem key={`${item.subject}-${item.tone}`} {...item} />
         ))}
@@ -198,13 +235,13 @@ function ScheduleItem({
   };
 
   return (
-    <div className="flex h-[64px] items-center gap-[20px] rounded-[10px] bg-white px-[17px] shadow-[0_0_4px_rgba(0,0,0,0.25)]">
+    <div className="flex h-[48px] items-center gap-[12px] rounded-[12px] bg-white px-[12px] border border-gray-100 shadow-sm transition-transform hover:translate-x-1">
       <span
-        className={`flex h-[35px] w-[140px] items-center justify-center rounded-[5px] text-[18px] font-medium ${styles[tone]}`}
+        className={`flex h-[24px] w-[90px] items-center justify-center rounded-full text-[12px] font-semibold ${styles[tone]}`}
       >
         {subject}
       </span>
-      <span className="min-w-0 truncate text-[18px] font-medium text-[#3a3a3a]">
+      <span className="min-w-0 truncate text-[14px] font-medium text-[#444444]">
         {title}
       </span>
     </div>
@@ -219,37 +256,38 @@ function StatsCard() {
   ];
 
   return (
-    <section className="mt-[85px] grid h-[214px] grid-cols-3 rounded-[20px] bg-white shadow-[0_4px_12px_rgba(0,0,0,0.25)]">
+    <section className="grid h-[140px] grid-cols-3 rounded-[24px] bg-white border border-gray-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
       {stats.map(([label, value], index) => (
         <div
           key={label}
           className={`flex flex-col items-center justify-center ${
-            index > 0 ? 'border-l border-[#c4c4c4]' : ''
+            index > 0 ? 'border-l border-gray-100' : ''
           }`}
         >
-          <p className="text-[24px] font-medium text-[#00d56e]">{label}</p>
-          <p className="mt-[31px] text-[32px] font-bold text-black">{value}</p>
+          <p className="text-[15px] font-semibold text-[#00d56e] tracking-tight">{label}</p>
+          <p className="mt-[12px] text-[20px] font-bold text-[#111111]">{value}</p>
         </div>
       ))}
     </section>
   );
 }
 
+
 function LectureTabs() {
   return (
-    <div>
-      <div className="flex items-center justify-between">
-        <button className="cursor-pointer text-[20px] font-bold text-[#00d56e]">
-          강의목록
-        </button>
-
-        <div className="flex gap-[76px] text-[20px] font-medium text-[#545454]">
-          <button className="cursor-pointer">날짜순</button>
-          <button className="cursor-pointer">목록순</button>
+    <div className="border-b border-gray-100 pb-2">
+      <div className="flex items-center justify-between px-2">
+        <div className="flex gap-8">
+          <button className="relative cursor-pointer text-[18px] font-bold text-[#00d56e]">
+            강의목록
+            <div className="absolute -bottom-[10px] left-0 h-[3px] w-full bg-[#00d56e] rounded-full" />
+          </button>
         </div>
-      </div>
-      <div className="relative mt-[26px] h-[8px] border-t border-[#c4c4c4]">
-        <div className="absolute top-[-4px] left-0 h-[8px] w-[136px] bg-[#00d56e]" />
+
+        <div className="flex gap-[32px] text-[14px] font-medium text-[#888888]">
+          <button className="cursor-pointer hover:text-[#00d56e]">날짜순</button>
+          <button className="cursor-pointer hover:text-[#00d56e]">목록순</button>
+        </div>
       </div>
     </div>
   );
@@ -267,18 +305,19 @@ function LectureRow({
   color: string;
 }) {
   return (
-    <button className="grid h-[100px] w-full cursor-pointer grid-cols-[250px_1fr_150px] items-center rounded-[20px] border border-[#c4c4c4] bg-white px-[120px] text-left shadow-[0_4px_15px_rgba(0,0,0,0.25)] transition-transform hover:-translate-y-[1px]">
-      <span className="text-[24px] font-bold" style={{ color }}>
+    <button className="grid h-[80px] w-full cursor-pointer grid-cols-[200px_1fr_120px] items-center rounded-[20px] border border-gray-100 bg-white px-[48px] text-left shadow-sm transition-all hover:shadow-md hover:-translate-y-[2px]">
+      <span className="text-[18px] font-bold" style={{ color }}>
         {subject}
       </span>
-      <span className="text-[20px] font-medium text-[#545454]">{period}</span>
+      <span className="text-[15px] font-medium text-[#777777]">{period}</span>
       <span
-        className="flex items-center justify-end gap-[8px] text-[18px] font-medium"
+        className="flex items-center justify-end gap-[6px] text-[15px] font-semibold"
         style={{ color }}
       >
         {notes}
-        <MdChevronRight size={22} />
+        <MdChevronRight size={18} />
       </span>
     </button>
   );
 }
+

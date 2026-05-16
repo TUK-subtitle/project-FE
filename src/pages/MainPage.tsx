@@ -284,7 +284,7 @@ function ShowcaseCard({
       <p className="text-[14px] font-semibold tracking-[0.08em] text-[#00d56e]">
         {step.eyebrow}
       </p>
-      <h2 className="mt-2 text-[18px] leading-[1.28] font-semibold tracking-[-0.035em] text-[#111111] sm:text-[22px]">
+      <h2 className="mt-1 text-[18px] leading-[1.28] font-semibold tracking-[-0.035em] text-[#111111] sm:text-[22px]">
         {step.title.split('\n').map((line) => (
           <span key={`${step.keyword}-${line}`}>
             {line}
@@ -292,7 +292,7 @@ function ShowcaseCard({
           </span>
         ))}
       </h2>
-      <p className="mt-5 text-[15px] leading-[1.5] text-[#6c736f]">
+      <p className="mt-3 text-[15px] leading-[1.5] text-[#6c736f]">
         {step.description}
       </p>
     </div>
@@ -326,7 +326,7 @@ function ShowcaseScene({
         }}
       >
         <div
-          className="absolute top-[11%] w-full max-w-[360px] right-[5%]"
+          className="absolute top-[14%] w-full max-w-[360px] right-[5%]"
         >
           <ShowcaseCard step={step} />
         </div>
