@@ -96,8 +96,18 @@ export default function MainPage() {
   const summaryOpacity = clamp((showcaseProgress - 0.58) / 0.18, 0, 1);
   const realtimeContentProgress = clamp((showcaseProgress - 0.04) / 0.56, 0, 1);
   const summaryContentProgress = clamp((showcaseProgress - 0.62) / 0.3, 0, 1);
-  const realtimeContentTranslateY = 36 - realtimeContentProgress * 180;
-  const summaryContentTranslateY = 36 - summaryContentProgress * 180;
+  const realtimeContentTranslateY =
+    realtimeContentProgress < 0.22
+      ? 36 - (realtimeContentProgress / 0.22) * 88
+      : realtimeContentProgress < 0.76
+        ? -52
+        : -52 - ((realtimeContentProgress - 0.76) / 0.24) * 92;
+  const summaryContentTranslateY =
+    summaryContentProgress < 0.14
+      ? 36 - (summaryContentProgress / 0.14) * 92
+      : summaryContentProgress < 0.9
+        ? -56
+        : -56 - ((summaryContentProgress - 0.9) / 0.1) * 88;
   const showcaseSectionTop = showcaseRef.current?.offsetTop ?? 0;
   const showcaseSectionHeight = showcaseRef.current?.offsetHeight ?? 0;
   const showcaseCanvasHeight = Math.max(viewportHeight - 103, 0);
@@ -121,7 +131,7 @@ export default function MainPage() {
         >
           <Link
             to="/main"
-            className="font-['Chab'] text-[30px] leading-[64px] text-[#00d56e]"
+            className="font-['Chab'] text-[26px] leading-[64px] text-[#00d56e]"
           >
             SpeakView
           </Link>
@@ -282,7 +292,7 @@ function ShowcaseCard({
           </span>
         ))}
       </h2>
-      <p className="mt-5 text-[15px] leading-[1.8] text-[#6c736f]">
+      <p className="mt-5 text-[15px] leading-[1.5] text-[#6c736f]">
         {step.description}
       </p>
     </div>
@@ -304,7 +314,7 @@ function ShowcaseScene({
   return (
     <div className={`relative h-full ${isOverlay ? 'bg-white' : ''}`}>
       <div
-        className="pointer-events-none absolute left-1/2 top-[12%] z-0 -translate-x-1/2 whitespace-nowrap text-[88px] leading-none font-semibold tracking-[-0.08em] text-[#b9b9b9]/34 sm:text-[150px] lg:text-[240px]"
+        className="pointer-events-none absolute left-[36%] top-[4%] z-0 -translate-x-1/2 whitespace-nowrap text-[64px] leading-none font-semibold tracking-[-0.08em] text-black/85 sm:text-[110px] lg:text-[180px]"
       >
         {step.keyword}
       </div>
@@ -316,13 +326,13 @@ function ShowcaseScene({
         }}
       >
         <div
-          className={`absolute top-[11%] w-full max-w-[360px] ${isSummary ? 'left-[5%]' : 'right-[5%]'}`}
+          className="absolute top-[11%] w-full max-w-[360px] right-[5%]"
         >
           <ShowcaseCard step={step} />
         </div>
 
         <div
-          className={`absolute bottom-[10%] w-full max-w-[700px] ${isSummary ? 'left-[5%]' : 'right-[5%]'}`}
+          className="absolute bottom-[10%] w-full max-w-[700px] right-[5%]"
         >
           <div className="overflow-hidden rounded-[36px] border border-[#edf1ee] bg-white shadow-[0_30px_90px_rgba(17,24,39,0.1)]">
             <img
