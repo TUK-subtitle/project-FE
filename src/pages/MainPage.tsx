@@ -37,6 +37,10 @@ export default function MainPage() {
   const [isHeroVisible, setIsHeroVisible] = useState(false);
   const [showcaseProgress, setShowcaseProgress] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(0);
+  const [showcaseMetrics, setShowcaseMetrics] = useState({
+    top: 0,
+    height: 0,
+  });
   const showcaseRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -52,17 +56,26 @@ export default function MainPage() {
           totalScrollable,
           Math.max(0, -rect.top),
         );
+        const nextMetrics = {
+          top: window.scrollY + rect.top,
+          height: rect.height,
+        };
 
         setShowcaseProgress(
           Math.min(1, Math.max(0, progressed / totalScrollable)),
         );
+        setShowcaseMetrics(nextMetrics);
       }
     };
 
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll);
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -135,8 +148,8 @@ export default function MainPage() {
         ? -52
         : -52 - ((mypageContentProgress - 0.9) / 0.1) * 88;
 
-  const showcaseSectionTop = showcaseRef.current?.offsetTop ?? 0;
-  const showcaseSectionHeight = showcaseRef.current?.offsetHeight ?? 0;
+  const showcaseSectionTop = showcaseMetrics.top;
+  const showcaseSectionHeight = showcaseMetrics.height;
   const showcaseCanvasHeight = Math.max(viewportHeight - 80, 0);
   const showcasePinStart = showcaseSectionTop - 80;
   const showcasePinEnd = showcaseSectionTop + showcaseSectionHeight - viewportHeight;
