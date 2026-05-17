@@ -144,9 +144,7 @@ export default function MainPage() {
   const mypageContentTranslateY =
     mypageContentProgress < 0.25
       ? 36 - (mypageContentProgress / 0.25) * 88
-      : mypageContentProgress < 0.9
-        ? -52
-        : -52 - ((mypageContentProgress - 0.9) / 0.1) * 88;
+      : -52;
 
   const showcaseSectionTop = showcaseMetrics.top;
   const showcaseSectionHeight = showcaseMetrics.height;
