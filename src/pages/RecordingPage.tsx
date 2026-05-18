@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import Sidebar from '@/components/layout/Sidebar';
 import NoteHeader from '@/components/recording/NoteHeader';
 import TranscriptArea from '@/components/recording/TranscriptArea';
@@ -13,6 +14,10 @@ import { getFinalSummary, requestFinalSummary } from '@/api/summary';
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
 type MainTab = 'transcript' | 'summary';
+interface RecordingLocationState {
+  subject?: string;
+  title?: string;
+}
 const FINAL_SUMMARY_PENDING_TEXT =
   '아직 최종 요약본이 생성되지 않았거나 해당 강의를 찾을 수 없습니다.';
 
@@ -41,7 +46,11 @@ function formatElapsed(ms: number): string {
 }
 
 export default function RecordingPage() {
-  const [noteTitle, setNoteTitle] = useState('');
+  const location = useLocation();
+  const routeState = location.state as RecordingLocationState | null;
+  const initialNoteTitle = routeState?.title ?? '';
+  const noteFolder = routeState?.subject ?? '폴더 위치';
+  const [noteTitle, setNoteTitle] = useState(initialNoteTitle);
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [summaries, setSummaries] = useState<string[]>([]);
   const [memos, setMemos] = useState<MemoEntry[]>([]);
@@ -195,7 +204,7 @@ export default function RecordingPage() {
           title={noteTitle}
           onTitleChange={setNoteTitle}
           date={formatCurrentDate()}
-          folder="전체 노트"
+          folder={noteFolder}
         />
         <div className="mt-[15px] border-t border-[#c4c4c4]" />
 

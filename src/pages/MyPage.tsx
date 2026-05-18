@@ -235,7 +235,11 @@ function ScheduleItem({
   };
 
   return (
-    <div className="flex h-[48px] items-center gap-[12px] rounded-[12px] bg-white px-[12px] border border-gray-100 shadow-sm transition-transform hover:translate-x-1">
+    <Link
+      to="/recording"
+      state={{ subject, title }}
+      className="flex h-[48px] items-center gap-[12px] rounded-[12px] border border-gray-100 bg-white px-[12px] shadow-sm transition-transform hover:translate-x-1 focus:ring-2 focus:ring-[#00d56e]/30 focus:outline-none"
+    >
       <span
         className={`flex h-[24px] w-[90px] items-center justify-center rounded-full text-[12px] font-semibold ${styles[tone]}`}
       >
@@ -244,7 +248,7 @@ function ScheduleItem({
       <span className="min-w-0 truncate text-[14px] font-medium text-[#444444]">
         {title}
       </span>
-    </div>
+    </Link>
   );
 }
 
@@ -320,4 +324,3 @@ function LectureRow({
     </button>
   );
 }
-

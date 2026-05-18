@@ -37,9 +37,6 @@ export default function NoteHeader({
           </p>
           <div className="mt-[4px] flex items-center gap-[8px]">
             <span className="text-[13px] leading-normal font-medium text-[#c4c4c4]">
-              폴더 위치
-            </span>
-            <span className="rounded-[20px] bg-[#ececec] px-[10px] py-[2px] text-[10px] font-medium text-black">
               {folder}
             </span>
           </div>
