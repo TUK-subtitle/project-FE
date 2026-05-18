@@ -24,7 +24,7 @@ export default function LoginPage() {
     try {
       const user = await login({ loginId: trimmedLoginId, password });
       localStorage.setItem('speakview:user', JSON.stringify(user));
-      navigate('/mypage');
+      navigate('/main');
     } catch (error) {
       console.error('[Auth] 로그인 실패:', error);
       setErrorMessage('아이디 또는 비밀번호를 확인해주세요.');
