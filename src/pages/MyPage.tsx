@@ -1,5 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { MdChevronRight } from 'react-icons/md';
+import { MdChevronRight, MdClose } from 'react-icons/md';
 
 const PROFILE_IMAGE = '/Group%20105.png';
 const PAGE_WIDTH_CLASS = 'max-w-[1180px]';
@@ -7,18 +8,18 @@ const PAGE_WIDTH_CLASS = 'max-w-[1180px]';
 const scheduleItems = [
   {
     subject: '소프트웨어공학',
-    title: '소프트웨어 공학의 모든 것 2장',
-    tone: 'green',
+    title: '디자인 패턴의 이해와 실습',
+    tone: 'green' as const,
   },
   {
     subject: '자료구조',
-    title: '스택과 큐 자료구조 정리',
-    tone: 'orange',
+    title: '해시 테이블과 성능 최적화',
+    tone: 'orange' as const,
   },
   {
-    subject: '운영체제',
-    title: '프로세스와 스레드 개념 정리',
-    tone: 'blue',
+    subject: '물리학실험',
+    title: '전자기 유도 현상 측정 실험',
+    tone: 'blue' as const,
   },
 ] as const;
 
@@ -26,26 +27,33 @@ const lectures = [
   {
     subject: '소프트웨어공학',
     period: '2026.03.02 ~ 수강중',
-    notes: '15개 노트',
+    notes: '3개 노트',
     color: '#4adf96',
+    scripts: [
+      { id: 1, name: '디자인 패턴 서론', date: '2026.05.11', time: '14:30' },
+      { id: 2, name: '싱글톤 패턴 실습', date: '2026.05.04', time: '14:32' },
+      { id: 3, name: '옵저버 패턴의 활용', date: '2026.04.27', time: '14:28' },
+    ],
   },
   {
     subject: '자료구조',
     period: '2026.03.02 ~ 수강중',
-    notes: '8개 노트',
+    notes: '2개 노트',
     color: '#ff7f29',
-  },
-  {
-    subject: '운영체제',
-    period: '2026.03.02 ~ 수강중',
-    notes: '16개 노트',
-    color: '#34cfe4',
+    scripts: [
+      { id: 1, name: '해시 테이블 기초', date: '2026.05.12', time: '10:00' },
+      { id: 2, name: '충돌 해결 전략', date: '2026.05.05', time: '10:05' },
+    ],
   },
   {
     subject: '물리학실험',
     period: '2026.03.02 ~ 수강중',
-    notes: '15개 노트',
-    color: '#ff6ec5',
+    notes: '2개 노트',
+    color: '#34cfe4',
+    scripts: [
+      { id: 1, name: '전자기 유도 실험 데이터', date: '2026.05.13', time: '16:00' },
+      { id: 2, name: '렌츠의 법칙 검증', date: '2026.05.06', time: '16:15' },
+    ],
   },
 ] as const;
 
@@ -80,6 +88,7 @@ function getTodayInfo() {
 
 export default function MyPage() {
   const { fullDate, dayName, weekDays, todayDate } = getTodayInfo();
+  const [selectedLecture, setSelectedLecture] = useState<(typeof lectures)[number] | null>(null);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-white text-[#545454]">
@@ -150,14 +159,78 @@ export default function MyPage() {
         <section
           className={`mx-auto ${PAGE_WIDTH_CLASS} pt-[80px] pb-[120px]`}
         >
-          <LectureTabs />
-          <div className="mt-[48px] flex flex-col gap-[16px]">
-            {lectures.map((lecture) => (
-              <LectureRow
-                key={`${lecture.subject}-${lecture.color}`}
-                {...lecture}
-              />
-            ))}
+          <div className="flex gap-[40px] items-start min-h-[600px]">
+            {/* Left Side: Lecture List */}
+            <div 
+              className={`transition-all duration-500 ease-in-out ${
+                selectedLecture ? 'w-[480px]' : 'w-full'
+              }`}
+            >
+              <LectureTabs />
+              <div className="mt-[48px] flex flex-col gap-[16px]">
+                {lectures.map((lecture) => (
+                  <LectureRow
+                    key={`${lecture.subject}-${lecture.color}`}
+                    lecture={lecture}
+                    onClick={() =>
+                      setSelectedLecture((current) =>
+                        current?.subject === lecture.subject ? null : lecture,
+                      )
+                    }
+                    active={selectedLecture?.subject === lecture.subject}
+                    isNarrow={!!selectedLecture}
+                  />
+                ))}
+              </div>
+            </div>
+
+            {/* Right Side: Detail Panel */}
+            <div 
+              className={`transition-all duration-500 ease-in-out border border-gray-100 rounded-[12px] bg-white shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden ${
+                selectedLecture ? 'flex-1 opacity-100 translate-x-0' : 'w-0 opacity-0 translate-x-12'
+              }`}
+            >
+              {selectedLecture && (
+                <div className="p-[40px] flex flex-col h-full bg-white">
+                  <div className="flex items-center justify-between mb-[32px]">
+                    <h3 className="text-[22px] font-bold text-[#111111]">
+                      <span style={{ color: selectedLecture.color }}>{selectedLecture.subject}</span>
+                    </h3>
+                    <button 
+                      onClick={() => setSelectedLecture(null)}
+                      className="p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-[#999999] hover:text-[#333333]"
+                    >
+                      <MdClose size={24} />
+                    </button>
+                  </div>
+
+                  <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
+                    {selectedLecture.scripts.map((script) => (
+                      <div 
+                        key={script.id}
+                        className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 hover:border-[#00d56e]/30 hover:bg-white transition-all cursor-pointer group"
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <p className="text-[16px] font-bold text-[#333333] group-hover:text-[#00d56e] transition-colors">{script.name}</p>
+                          <button className="text-[12px] font-bold text-[#00d56e] bg-[#00d56e]/10 px-3 py-1 rounded-full hover:bg-[#00d56e] hover:text-white transition-all cursor-pointer">
+                            퀴즈 풀기
+                          </button>
+                        </div>
+                        <div className="flex gap-3 text-[13px] text-[#999999]">
+                          <span>{script.date}</span>
+                          <span>•</span>
+                          <span>{script.time} 저장</span>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="mt-4 p-6 rounded-[20px] bg-[#f7faf8] border border-dashed border-[#00d56e]/30 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#edf5f1] transition-colors text-center">
+                      <p className="text-[14px] font-bold text-[#00d56e]">전체 요약 노트 보기</p>
+                      <p className="text-[12px] text-[#888888]">핵심 내용과 퀴즈가 포함되어 있습니다</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </section>
       </main>
@@ -256,7 +329,7 @@ function StatsCard() {
   const stats = [
     ['학교', '한국공학대학교'],
     ['학점', '3.5'],
-    ['강의 수', '7'],
+    ['강의 수', '3'],
   ];
 
   return (
@@ -287,39 +360,45 @@ function LectureTabs() {
             <div className="absolute -bottom-[10px] left-0 h-[3px] w-full bg-[#00d56e] rounded-full" />
           </button>
         </div>
-
-        <div className="flex gap-[32px] text-[14px] font-medium text-[#888888]">
-          <button className="cursor-pointer hover:text-[#00d56e]">날짜순</button>
-          <button className="cursor-pointer hover:text-[#00d56e]">목록순</button>
-        </div>
       </div>
     </div>
   );
 }
 
 function LectureRow({
-  subject,
-  period,
-  notes,
-  color,
+  lecture,
+  onClick,
+  active,
+  isNarrow,
 }: {
-  subject: string;
-  period: string;
-  notes: string;
-  color: string;
+  lecture: (typeof lectures)[number];
+  onClick: () => void;
+  active: boolean;
+  isNarrow: boolean;
 }) {
   return (
-    <button className="grid h-[80px] w-full cursor-pointer grid-cols-[200px_1fr_120px] items-center rounded-[20px] border border-gray-100 bg-white px-[48px] text-left shadow-sm transition-all hover:shadow-md hover:-translate-y-[2px]">
-      <span className="text-[18px] font-bold" style={{ color }}>
-        {subject}
+    <button 
+      onClick={onClick}
+      className={`grid h-[80px] w-full cursor-pointer items-center rounded-[20px] border transition-all duration-500 hover:shadow-md hover:-translate-y-[2px] ${
+        active 
+          ? 'border-[#00d56e] bg-[#f7faf8] shadow-sm shadow-[#00d56e]/5' 
+          : 'border-gray-100 bg-white shadow-sm'
+      } ${
+        isNarrow ? 'grid-cols-[140px_1fr_90px] px-[24px]' : 'grid-cols-[200px_1fr_120px] px-[48px]'
+      }`}
+    >
+      <span className={`font-bold transition-all duration-500 ${isNarrow ? 'text-[16px]' : 'text-[18px]'}`} style={{ color: lecture.color }}>
+        {lecture.subject}
       </span>
-      <span className="text-[15px] font-medium text-[#777777]">{period}</span>
+      <span className={`font-medium text-[#777777] transition-all duration-500 truncate ${isNarrow ? 'text-[13px]' : 'text-[15px]'}`}>
+        {lecture.period}
+      </span>
       <span
-        className="flex items-center justify-end gap-[6px] text-[15px] font-semibold"
-        style={{ color }}
+        className={`flex items-center justify-end gap-[4px] font-semibold transition-all duration-500 ${isNarrow ? 'text-[13px]' : 'text-[15px]'}`}
+        style={{ color: lecture.color }}
       >
-        {notes}
-        <MdChevronRight size={18} />
+        {lecture.notes}
+        <MdChevronRight size={isNarrow ? 16 : 18} />
       </span>
     </button>
   );
