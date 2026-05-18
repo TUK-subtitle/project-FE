@@ -237,14 +237,16 @@ export default function RecordingPage() {
         </div>
       </div>
 
-      <RecordingBar
-        isRecording={isRecording}
-        isPaused={isPaused}
-        onStart={handleStart}
-        onTogglePause={handleTogglePause}
-        onStop={handleStop}
-        onCancel={handleCancel}
-      />
+      {!finalSummary && (
+        <RecordingBar
+          isRecording={isRecording}
+          isPaused={isPaused}
+          onStart={handleStart}
+          onTogglePause={handleTogglePause}
+          onStop={handleStop}
+          onCancel={handleCancel}
+        />
+      )}
     </div>
   );
 }
