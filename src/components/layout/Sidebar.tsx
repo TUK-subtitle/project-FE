@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   MdOutlineHome,
   MdOutlineFolder,
@@ -14,9 +15,12 @@ export default function Sidebar() {
 
   return (
     <aside className="flex h-full w-[241px] shrink-0 flex-col border-r border-[#c4c4c4] px-[41px] pt-[19px]">
-      <h1 className="font-[Chab] text-[24px] leading-[40px] text-[#00ec7a]">
+      <Link
+        to="/main"
+        className="font-[Chab] text-[24px] leading-[40px] text-[#00ec7a]"
+      >
         SpeakView
-      </h1>
+      </Link>
 
       <nav className="mt-[40px] flex flex-col gap-[10px] ">
         <SidebarItem
