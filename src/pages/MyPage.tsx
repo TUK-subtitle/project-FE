@@ -12,12 +12,12 @@ const scheduleItems = [
   },
   {
     subject: '자료구조',
-    title: '소프트웨어 공학의 모든 것 2장',
+    title: '스택과 큐 자료구조 정리',
     tone: 'orange',
   },
   {
-    subject: '소프트웨어공학',
-    title: '소프트웨어 공학의 모든 것 2장',
+    subject: '운영체제',
+    title: '프로세스와 스레드 개념 정리',
     tone: 'blue',
   },
 ] as const;
@@ -36,7 +36,7 @@ const lectures = [
     color: '#ff7f29',
   },
   {
-    subject: '소프트웨어공학',
+    subject: '운영체제',
     period: '2026.03.02 ~ 수강중',
     notes: '16개 노트',
     color: '#34cfe4',
