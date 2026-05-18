@@ -41,6 +41,7 @@ function formatElapsed(ms: number): string {
 }
 
 export default function RecordingPage() {
+  const [noteTitle, setNoteTitle] = useState('');
   const [entries, setEntries] = useState<TranscriptEntry[]>([]);
   const [summaries, setSummaries] = useState<string[]>([]);
   const [memos, setMemos] = useState<MemoEntry[]>([]);
@@ -191,7 +192,8 @@ export default function RecordingPage() {
       <div className="flex min-w-0 flex-1 flex-col">
         {/* 상단 헤더 영역 - 전체 너비 */}
         <NoteHeader
-          title="새로운 노트"
+          title={noteTitle}
+          onTitleChange={setNoteTitle}
           date={formatCurrentDate()}
           folder="전체 노트"
         />
