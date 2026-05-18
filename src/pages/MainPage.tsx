@@ -181,7 +181,6 @@ export default function MainPage() {
             <Link to="/recording" className="text-[#545454]">
               실시간자막
             </Link>
-            <button className="cursor-pointer text-[#545454]">전체 노트</button>
             <Link to="/mypage" className="text-[#545454]">
               마이페이지
             </Link>

@@ -110,7 +110,6 @@ export default function MyPage() {
             <Link to="/recording" className="text-[#545454]">
               실시간자막
             </Link>
-            <button className="cursor-pointer text-[#545454]">전체 노트</button>
             <Link to="/mypage" className="text-[#00d56e]">
               마이페이지
             </Link>
@@ -212,9 +211,6 @@ export default function MyPage() {
                       >
                         <div className="flex justify-between items-start mb-2">
                           <p className="text-[16px] font-bold text-[#333333] group-hover:text-[#00d56e] transition-colors">{script.name}</p>
-                          <button className="text-[12px] font-bold text-[#00d56e] bg-[#00d56e]/10 px-3 py-1 rounded-full hover:bg-[#00d56e] hover:text-white transition-all cursor-pointer">
-                            퀴즈 풀기
-                          </button>
                         </div>
                         <div className="flex gap-3 text-[13px] text-[#999999]">
                           <span>{script.date}</span>
@@ -223,10 +219,6 @@ export default function MyPage() {
                         </div>
                       </div>
                     ))}
-                    <div className="mt-4 p-6 rounded-[20px] bg-[#f7faf8] border border-dashed border-[#00d56e]/30 flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-[#edf5f1] transition-colors text-center">
-                      <p className="text-[14px] font-bold text-[#00d56e]">전체 요약 노트 보기</p>
-                      <p className="text-[12px] text-[#888888]">핵심 내용과 퀴즈가 포함되어 있습니다</p>
-                    </div>
                   </div>
                 </div>
               )}
