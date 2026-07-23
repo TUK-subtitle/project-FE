@@ -137,7 +137,7 @@ export default function RecordingPage() {
 
     try {
       await wait(500);
-      await requestFinalSummary();
+      await requestFinalSummary(noteTitle.trim() || undefined);
 
       for (let attempt = 0; attempt < 10; attempt += 1) {
         const summary = await getFinalSummary();
@@ -159,7 +159,7 @@ export default function RecordingPage() {
     } finally {
       setIsFinalSummaryLoading(false);
     }
-  }, []);
+  }, [noteTitle]);
 
   const handleStop = useCallback(() => {
     audioCaptureRef.current?.stop();
