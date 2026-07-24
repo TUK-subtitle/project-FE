@@ -2,12 +2,11 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import io from 'socket.io-client';
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL as string;
-const CONTENT_ID = 1;
 
 interface UseSocketReturn {
   isConnected: boolean;
   sendAudio: (pcmData: ArrayBuffer) => void;
-  connect: () => void;
+  connect: (contentId: number) => void;
   disconnect: () => void;
 }
 
@@ -32,7 +31,7 @@ export function useSocket(
     onSummaryRef.current = onSummary;
   }, [onSubtitleFinal, onSummary]);
 
-  const connect = useCallback(() => {
+  const connect = useCallback((contentId: number) => {
     if (socketRef.current?.connected) return;
 
     const socket = io(SOCKET_URL, {
@@ -43,8 +42,8 @@ export function useSocket(
 
     socket.on('connect', () => {
       console.log('[Socket] 연결 성공, id:', socket.id);
-      socket.emit('stt:join', { contentId: CONTENT_ID });
-      console.log('[Socket] stt:join 전송, contentId:', CONTENT_ID);
+      socket.emit('stt:join', { contentId });
+      console.log('[Socket] stt:join 전송, contentId:', contentId);
       setIsConnected(true);
     });
 

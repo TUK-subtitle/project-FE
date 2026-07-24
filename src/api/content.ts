@@ -8,6 +8,18 @@ export interface ContentItem {
   createdAt: string;
 }
 
+export async function createContent(
+  userId: number,
+  subjectId: number,
+): Promise<number> {
+  const res = await axios.post<{ data: number }>(`${API_URL}/api/contents`, {
+    userId,
+    subjectId,
+  });
+
+  return res.data.data;
+}
+
 export async function getContents(
   userId: number,
   subjectName?: string,

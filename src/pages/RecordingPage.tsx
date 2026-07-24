@@ -11,8 +11,17 @@ import { createAudioCapture, type AudioCapture } from '@/utils/audioCapture';
 import type { TranscriptEntry, MemoEntry } from '@/types/recording';
 import { createMemo } from '@/api/memo';
 import { getFinalSummary, requestFinalSummary } from '@/api/summary';
+import { createContent } from '@/api/content';
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'];
+const DEFAULT_USER_ID = 1;
+const DEFAULT_SUBJECT_ID = 1;
+const SUBJECT_ID_BY_NAME: Record<string, number> = {
+  소프트웨어공학: 1,
+  자료구조: 2,
+  물리학실험: 3,
+  운영체제: 4,
+};
 type MainTab = 'transcript' | 'summary';
 interface RecordingLocationState {
   subject?: string;
@@ -45,6 +54,18 @@ function formatElapsed(ms: number): string {
   return `${min}:${sec}`;
 }
 
+function getStoredUserId() {
+  const storedUser = localStorage.getItem('speakview:user');
+  if (!storedUser) return DEFAULT_USER_ID;
+
+  try {
+    const user = JSON.parse(storedUser) as { id?: number };
+    return user.id ?? DEFAULT_USER_ID;
+  } catch {
+    return DEFAULT_USER_ID;
+  }
+}
+
 export default function RecordingPage() {
   const location = useLocation();
   const routeState = location.state as RecordingLocationState | null;
@@ -59,6 +80,7 @@ export default function RecordingPage() {
   const [activeMainTab, setActiveMainTab] = useState<MainTab>('transcript');
   const [finalSummary, setFinalSummary] = useState('');
   const [isFinalSummaryLoading, setIsFinalSummaryLoading] = useState(false);
+  const [contentId, setContentId] = useState<number | null>(null);
 
   const audioCaptureRef = useRef<AudioCapture | null>(null);
   const startTimeRef = useRef<number>(0);
@@ -101,7 +123,10 @@ export default function RecordingPage() {
   );
 
   const handleStart = useCallback(async () => {
-    connect();
+    const subjectId = SUBJECT_ID_BY_NAME[noteFolder] ?? DEFAULT_SUBJECT_ID;
+    const newContentId = await createContent(getStoredUserId(), subjectId);
+    setContentId(newContentId);
+    connect(newContentId);
 
     const capture = createAudioCapture((pcmData) => {
       sendAudio(pcmData);
@@ -114,9 +139,11 @@ export default function RecordingPage() {
     setIsRecording(true);
     setIsPaused(false);
     setEntries([]);
+    setSummaries([]);
+    setMemos([]);
     setFinalSummary('');
     setIsFinalSummaryLoading(false);
-  }, [connect, sendAudio]);
+  }, [connect, noteFolder, sendAudio]);
 
   const handleTogglePause = useCallback(() => {
     if (!audioCaptureRef.current) return;
@@ -132,15 +159,15 @@ export default function RecordingPage() {
     }
   }, [isPaused]);
 
-  const loadFinalSummary = useCallback(async () => {
+  const loadFinalSummary = useCallback(async (targetContentId: number) => {
     setIsFinalSummaryLoading(true);
 
     try {
       await wait(500);
-      await requestFinalSummary(noteTitle.trim() || undefined);
+      await requestFinalSummary(noteTitle.trim() || undefined, targetContentId);
 
       for (let attempt = 0; attempt < 10; attempt += 1) {
-        const summary = await getFinalSummary();
+        const summary = await getFinalSummary(targetContentId);
 
         if (summary && summary !== FINAL_SUMMARY_PENDING_TEXT) {
           setFinalSummary(summary);
@@ -162,14 +189,16 @@ export default function RecordingPage() {
   }, [noteTitle]);
 
   const handleStop = useCallback(() => {
+    if (!contentId) return;
+
     audioCaptureRef.current?.stop();
     audioCaptureRef.current = null;
     setActiveMainTab('summary');
     disconnect();
-    void loadFinalSummary();
+    void loadFinalSummary(contentId);
     setIsRecording(false);
     setIsPaused(false);
-  }, [disconnect, loadFinalSummary]);
+  }, [contentId, disconnect, loadFinalSummary]);
 
   const handleCancel = useCallback(() => {
     audioCaptureRef.current?.stop();
@@ -183,15 +212,19 @@ export default function RecordingPage() {
 
   const handleMemoSubmit = useCallback(
     async (text: string) => {
+      if (!contentId) {
+        throw new Error('녹음 시작 후 메모를 작성할 수 있습니다.');
+      }
+
       const elapsed = Math.floor(getElapsed() / 1000);
       const timestamp = formatElapsed(elapsed * 1000);
-      await createMemo(text, timestamp);
+      await createMemo(text, timestamp, contentId);
       setMemos((prev) => [
         ...prev,
         { timestamp, content: text },
       ]);
     },
-    [getElapsed],
+    [contentId, getElapsed],
   );
 
   return (
