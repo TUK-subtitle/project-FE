@@ -23,9 +23,9 @@ export default function RightPanel({
   return (
     <div className="flex h-full w-[434px] shrink-0 flex-col border-l border-[#c4c4c4]">
       {/* 탭 헤더 */}
-      <div className="flex border-b border-[#c4c4c4]">
+      <div className="flex h-[56px] shrink-0 border-b border-[#c4c4c4]">
         <div
-          className={`flex flex-1 items-center justify-center py-[16px] ${
+          className={`flex h-full flex-1 items-center justify-center ${
             activeTab === 'summary' ? 'border-b-2 border-black' : ''
           }`}
         >
@@ -39,7 +39,7 @@ export default function RightPanel({
           </button>
         </div>
         <div
-          className={`flex flex-1 items-center justify-center py-[16px] ${
+          className={`flex h-full flex-1 items-center justify-center ${
             activeTab === 'memo' ? 'border-b-2 border-black' : ''
           }`}
         >
