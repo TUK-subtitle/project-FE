@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { MdChevronRight, MdClose } from 'react-icons/md';
 import { getContents, type ContentItem } from '@/api/content';
 
@@ -95,6 +95,7 @@ function formatContentSavedAt(createdAt: string) {
 }
 
 export default function MyPage() {
+  const navigate = useNavigate();
   const { fullDate, dayName, weekDays, todayDate } = getTodayInfo();
   const [selectedLecture, setSelectedLecture] = useState<(typeof lectures)[number] | null>(null);
   const [lectureContents, setLectureContents] = useState<ContentItem[]>([]);
@@ -227,7 +228,10 @@ export default function MyPage() {
                       <span style={{ color: selectedLecture.color }}>{selectedLecture.subject}</span>
                     </h3>
                     <button 
-                      onClick={() => setSelectedLecture(null)}
+                      onClick={() => {
+                        setSelectedLecture(null);
+                        setLectureContents([]);
+                      }}
                       className="p-1 hover:bg-gray-100 rounded-full transition-colors cursor-pointer text-[#999999] hover:text-[#333333]"
                     >
                       <MdClose size={24} />
@@ -252,9 +256,17 @@ export default function MyPage() {
                         const { date, time } = formatContentSavedAt(content.createdAt);
 
                         return (
-                          <div 
+                          <button 
                             key={content.id}
-                            className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 hover:border-[#00d56e]/30 hover:bg-white transition-all cursor-pointer group"
+                            className="w-full p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 hover:border-[#00d56e]/30 hover:bg-white transition-all cursor-pointer group text-left"
+                            onClick={() =>
+                              navigate(`/contents/${content.id}`, {
+                                state: {
+                                  subject: selectedLecture.subject,
+                                  title: content.title,
+                                },
+                              })
+                            }
                           >
                             <div className="flex justify-between items-start mb-2">
                               <p className="text-[16px] font-bold text-[#333333] group-hover:text-[#00d56e] transition-colors">{content.title}</p>
@@ -264,7 +276,7 @@ export default function MyPage() {
                               <span>•</span>
                               <span>{time} 저장</span>
                             </div>
-                          </div>
+                          </button>
                         );
                       })
                     )}
