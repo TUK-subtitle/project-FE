@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { MdChevronRight, MdClose } from 'react-icons/md';
+import { getContents, type ContentItem } from '@/api/content';
 
 const PROFILE_IMAGE = '/Group%20105.png';
 const PAGE_WIDTH_CLASS = 'max-w-[1180px]';
@@ -29,35 +30,23 @@ const lectures = [
     period: '2026.03.02 ~ 수강중',
     notes: '3개 노트',
     color: '#4adf96',
-    scripts: [
-      { id: 1, name: '디자인 패턴 서론', date: '2026.05.11', time: '14:30' },
-      { id: 2, name: '싱글톤 패턴 실습', date: '2026.05.04', time: '14:32' },
-      { id: 3, name: '옵저버 패턴의 활용', date: '2026.04.27', time: '14:28' },
-    ],
   },
   {
     subject: '자료구조',
     period: '2026.03.02 ~ 수강중',
     notes: '2개 노트',
     color: '#ff7f29',
-    scripts: [
-      { id: 1, name: '해시 테이블 기초', date: '2026.05.12', time: '10:00' },
-      { id: 2, name: '충돌 해결 전략', date: '2026.05.05', time: '10:05' },
-    ],
   },
   {
     subject: '물리학실험',
     period: '2026.03.02 ~ 수강중',
     notes: '2개 노트',
     color: '#34cfe4',
-    scripts: [
-      { id: 1, name: '전자기 유도 실험 데이터', date: '2026.05.13', time: '16:00' },
-      { id: 2, name: '렌츠의 법칙 검증', date: '2026.05.06', time: '16:15' },
-    ],
   },
 ] as const;
 
 const DAY_NAMES = ['일', '월', '화', '수', '목', '금', '토'] as const;
+const DEFAULT_USER_ID = 1;
 
 function getTodayInfo() {
   const now = new Date();
@@ -86,9 +75,55 @@ function getTodayInfo() {
   };
 }
 
+function getStoredUserId() {
+  const storedUser = localStorage.getItem('speakview:user');
+  if (!storedUser) return DEFAULT_USER_ID;
+
+  try {
+    const user = JSON.parse(storedUser) as { id?: number };
+    return user.id ?? DEFAULT_USER_ID;
+  } catch {
+    return DEFAULT_USER_ID;
+  }
+}
+
+function formatContentSavedAt(createdAt: string) {
+  return {
+    date: createdAt.slice(0, 10).replaceAll('-', '.'),
+    time: createdAt.slice(11, 16),
+  };
+}
+
 export default function MyPage() {
   const { fullDate, dayName, weekDays, todayDate } = getTodayInfo();
   const [selectedLecture, setSelectedLecture] = useState<(typeof lectures)[number] | null>(null);
+  const [lectureContents, setLectureContents] = useState<ContentItem[]>([]);
+  const [isContentsLoading, setIsContentsLoading] = useState(false);
+  const [contentsError, setContentsError] = useState('');
+
+  const handleLectureClick = async (lecture: (typeof lectures)[number]) => {
+    if (selectedLecture?.subject === lecture.subject) {
+      setSelectedLecture(null);
+      setLectureContents([]);
+      setContentsError('');
+      return;
+    }
+
+    setSelectedLecture(lecture);
+    setLectureContents([]);
+    setContentsError('');
+    setIsContentsLoading(true);
+
+    try {
+      const contents = await getContents(getStoredUserId(), lecture.subject);
+      setLectureContents(contents);
+    } catch (error) {
+      console.error('[Content] 강의 목록 조회 실패:', error);
+      setContentsError('노트 목록을 불러오지 못했습니다.');
+    } finally {
+      setIsContentsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-white text-[#545454]">
@@ -171,11 +206,7 @@ export default function MyPage() {
                   <LectureRow
                     key={`${lecture.subject}-${lecture.color}`}
                     lecture={lecture}
-                    onClick={() =>
-                      setSelectedLecture((current) =>
-                        current?.subject === lecture.subject ? null : lecture,
-                      )
-                    }
+                    onClick={() => void handleLectureClick(lecture)}
                     active={selectedLecture?.subject === lecture.subject}
                     isNarrow={!!selectedLecture}
                   />
@@ -204,21 +235,39 @@ export default function MyPage() {
                   </div>
 
                   <div className="flex flex-col gap-4 overflow-y-auto pr-2 custom-scrollbar">
-                    {selectedLecture.scripts.map((script) => (
-                      <div 
-                        key={script.id}
-                        className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 hover:border-[#00d56e]/30 hover:bg-white transition-all cursor-pointer group"
-                      >
-                        <div className="flex justify-between items-start mb-2">
-                          <p className="text-[16px] font-bold text-[#333333] group-hover:text-[#00d56e] transition-colors">{script.name}</p>
-                        </div>
-                        <div className="flex gap-3 text-[13px] text-[#999999]">
-                          <span>{script.date}</span>
-                          <span>•</span>
-                          <span>{script.time} 저장</span>
-                        </div>
+                    {isContentsLoading ? (
+                      <div className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 text-[14px] font-medium text-[#999999]">
+                        노트 목록을 불러오는 중입니다.
                       </div>
-                    ))}
+                    ) : contentsError ? (
+                      <div className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 text-[14px] font-medium text-[#ff5b5b]">
+                        {contentsError}
+                      </div>
+                    ) : lectureContents.length === 0 ? (
+                      <div className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 text-[14px] font-medium text-[#999999]">
+                        저장된 노트가 없습니다.
+                      </div>
+                    ) : (
+                      lectureContents.map((content) => {
+                        const { date, time } = formatContentSavedAt(content.createdAt);
+
+                        return (
+                          <div 
+                            key={content.id}
+                            className="p-5 rounded-[20px] bg-[#fcfcfc] border border-gray-100 hover:border-[#00d56e]/30 hover:bg-white transition-all cursor-pointer group"
+                          >
+                            <div className="flex justify-between items-start mb-2">
+                              <p className="text-[16px] font-bold text-[#333333] group-hover:text-[#00d56e] transition-colors">{content.title}</p>
+                            </div>
+                            <div className="flex gap-3 text-[13px] text-[#999999]">
+                              <span>{date}</span>
+                              <span>•</span>
+                              <span>{time} 저장</span>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
                   </div>
                 </div>
               )}
