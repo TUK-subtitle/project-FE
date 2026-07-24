@@ -28,15 +28,15 @@ export default function NoteHeader({
               aria-label="노트 이름"
             />
           ) : (
-            <h2 className="text-[24px] leading-normal font-bold text-[#c4c4c4]">
+            <h2 className="text-[24px] leading-normal font-bold text-[#3a3a3a]">
               {title}
             </h2>
           )}
-          <p className="mt-[4px] text-[13px] leading-normal font-medium text-[#c4c4c4]">
+          <p className="mt-[4px] text-[13px] leading-normal font-medium text-[#727272]">
             {date}
           </p>
           <div className="mt-[4px] flex items-center gap-[8px]">
-            <span className="text-[13px] leading-normal font-medium text-[#c4c4c4]">
+            <span className="text-[13px] leading-normal font-medium text-[#727272]">
               {folder}
             </span>
           </div>
