@@ -198,18 +198,22 @@ export default function NoteDetailPage() {
             </div>
 
             {activeMainTab === 'transcript' ? (
-              <div className="min-h-0 flex-1 overflow-y-auto px-[71px] pt-[28px] pb-[120px]">
+              <div className="flex min-h-0 flex-1 flex-col">
                 {isLoading ? (
+                  <div className="min-h-0 flex-1 overflow-y-auto px-[71px] pt-[28px] pb-[120px]">
                   <p className="text-[16px] font-medium text-[#727272]">
                     저장된 노트를 불러오는 중입니다.
                   </p>
+                  </div>
                 ) : errorMessage ? (
+                  <div className="min-h-0 flex-1 overflow-y-auto px-[71px] pt-[28px] pb-[120px]">
                   <p className="text-[16px] font-medium text-[#ff5b5b]">
                     {errorMessage}
                   </p>
+                  </div>
                 ) : (
                   <>
-                    <section className="sticky top-0 z-10 mb-[28px] border-b border-[#ececec] bg-white pb-[20px]">
+                    <section className="z-20 shrink-0 border-b border-[#ececec] bg-white px-[71px] pt-[20px] pb-[20px]">
                       {audio ? (
                         <audio
                           ref={audioRef}
@@ -233,41 +237,44 @@ export default function NoteDetailPage() {
                       </div>
                     </section>
 
-                    {segments.length === 0 ? (
-                      <p className="text-[16px] font-medium text-[#727272]">
-                        저장된 자막이 없습니다.
-                      </p>
-                    ) : (
-                      <div className="flex flex-col gap-[18px]">
-                        {segments.map((segment) => (
-                          <button
-                            key={segment.id}
-                            className={`w-full rounded-[8px] px-[16px] py-[14px] text-left transition-colors ${
-                              activeSegmentId === segment.id
-                                ? 'bg-[#edf5f1]'
-                                : 'bg-white hover:bg-[#fafafa]'
-                            }`}
-                            onClick={() => {
-                              if (audioRef.current) {
-                                audioRef.current.currentTime = segment.startMs / 1000;
-                              }
-                            }}
-                          >
-                            <p className="mb-[8px] text-[13px] font-bold text-[#c4c4c4]">
-                              {formatMs(segment.startMs)}
-                            </p>
-                            <div className="flex gap-[14px]">
-                              <span className="shrink-0 text-[12px] font-bold text-[#00d56e]">
-                                참석자 {segment.speaker}
-                              </span>
-                              <p className="text-[15px] leading-[1.7] font-medium whitespace-pre-wrap text-black">
-                                {segment.text}
+                    <div className="min-h-0 flex-1 overflow-y-auto px-[71px] pt-[28px] pb-[120px]">
+                      {segments.length === 0 ? (
+                        <p className="text-[16px] font-medium text-[#727272]">
+                          저장된 자막이 없습니다.
+                        </p>
+                      ) : (
+                        <div className="flex flex-col gap-[18px]">
+                          {segments.map((segment) => (
+                            <button
+                              key={segment.id}
+                              className={`w-full rounded-[8px] px-[16px] py-[14px] text-left transition-colors ${
+                                activeSegmentId === segment.id
+                                  ? 'bg-[#edf5f1]'
+                                  : 'bg-white hover:bg-[#fafafa]'
+                              }`}
+                              onClick={() => {
+                                if (audioRef.current) {
+                                  audioRef.current.currentTime =
+                                    segment.startMs / 1000;
+                                }
+                              }}
+                            >
+                              <p className="mb-[8px] text-[13px] font-bold text-[#c4c4c4]">
+                                {formatMs(segment.startMs)}
                               </p>
-                            </div>
-                          </button>
-                        ))}
-                      </div>
-                    )}
+                              <div className="flex gap-[14px]">
+                                <span className="shrink-0 text-[12px] font-bold text-[#00d56e]">
+                                  참석자 {segment.speaker}
+                                </span>
+                                <p className="text-[15px] leading-[1.7] font-medium whitespace-pre-wrap text-black">
+                                  {segment.text}
+                                </p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </>
                 )}
               </div>
